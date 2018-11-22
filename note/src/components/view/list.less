@@ -1,0 +1,32 @@
+.AppListView {
+  > ul {
+    list-style: none;
+    padding: 0 1.25rem;
+    margin: 0;
+    > li {
+      padding: .5rem;
+      margin-bottom: 1rem;
+      > .title , .info {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 15px;
+        line-height: 21px;
+        white-space: nowrap;
+      }
+      > .title {
+        color: #000;
+      }
+      > .info {
+        color: #8e8e93;
+      }
+      > .time {
+        font-size: 15px;
+        color: #8e8e93;
+        margin-top: .5rem;
+      }
+    }
+    > li:not(:last-child) {
+      border-bottom: 1px solid rgba(0, 0, 0, .1);
+    }
+  }
+}

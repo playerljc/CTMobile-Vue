@@ -3,8 +3,12 @@
  * Page.js
  */
 
+import React from 'react';
+import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 import $ from "jquery";
 import Constant from "./Constant";
+import {Provider} from "./GlobalContext";
 
 /**
  * 对数组进行遍历
@@ -37,15 +41,11 @@ function go(index) {
  */
 function createPageDOM() {
   const self = this;
-  /***
-   * 根据pageId克隆模板
-   */
-  this._pDom = $(this.ctmobile.templateDB[this.pageId])[0];
 
   /***
    * 设置page真实的id
    */
-  this._pDom.setAttribute("id", this.id);
+  this._pDom.setAttribute("id", this.pageId);
 
   /***
    * 改变page中所有包含id的属性的值都加入id前缀(根据情况进行扩展)
@@ -69,9 +69,7 @@ function createPageDOM() {
   /***
    * 获取page的页面过渡类型
    */
-  if (this._pDom.getAttribute("ct-data-transition")) {
-    this.transition = this._pDom.getAttribute("ct-data-transition");
-  }
+  this.transition = this.ctmobile.getPageConfigAttribute(this.pageId, 'transition');
 
   /***
    * 注册Page的默认事件
@@ -82,33 +80,17 @@ function createPageDOM() {
   /***
    * 对page中的通知(BorasdcastReceiver)进行处理
    */
-  if (this._pDom.getAttribute("ct-data-intentfilter-action")) {
+  const action = this.ctmobile.getPageConfigAttribute(this.pageId, 'intentfilterAction');
+  const categorys = this.ctmobile.getPageConfigAttribute(this.pageId, 'intentfilterCategorys');
+  const priority = this.ctmobile.getPageConfigAttribute(this.pageId, 'intentfilterPriority');
+  if (action) {
     this.ctmobile.registerReceiver({
       el: this._pDom,
-      action: this._pDom.getAttribute("ct-data-intentfilter-action"),
-      priority: this._pDom.getAttribute("ct-data-intentfilter-priority") ? parseInt(this._pDom.getAttribute("ct-data-intentfilter-priority")) : 0,
-      categorys: this._pDom.getAttribute("ct-data-intentfilter-categorys") ? this._pDom.getAttribute("ct-data-intentfilter-categorys").split(" ") : []
-    }, this.pageReceiver);
+      action: action,
+      priority: priority ? parseInt(priority) : 0,
+      categorys: categorys ? categorys.split(" ") : []
+    }, this.pageReceiver, this);
   }
-
-  /***
-   * 获取page中注册的返回按钮
-   */
-  this._pDom.addEventListener("click", function (e) {
-    if (e.target.getAttribute("ct-data-rel") && e.target.getAttribute("ct-data-rel") === "back") {
-      go.call(self, -1);
-    }
-  }, false);
-
-  /***
-   * 渲染
-   */
-  window.document.body.appendChild(this._pDom);
-
-  /***
-   * 触发pageCreate事件
-   */
-  this.ctmobile.fireEvent(this._pDom, "pageCreate");
 }
 
 /**
@@ -133,7 +115,6 @@ function addEventListeners() {
    * 注册Page的缺省事件
    */
   self.getPageJO().on({
-    "pageCreate": self.pageCreate.bind(self),
     "pageBeforeShow": self.pageBeforeShow.bind(self),
     "pageShow": self.pageShow.bind(self),
     "pageAfterShow": self.pageAfterShow.bind(self),
@@ -157,7 +138,7 @@ function addEventListeners() {
     /***
      * 如果当前页面的transition为material则肯定不会执行webkitTransitionEnd事件
      */
-    if (e.type === "webkitTransitionEnd" && e.target.getAttribute("ct-data-role") !== "page") {
+    if (e.type === "webkitTransitionEnd" && e.target.getAttribute("data-ct-data-role") !== "page") {
       return;
     }
 
@@ -190,8 +171,8 @@ function pageFinishTransitioneEndCallback(e) {
   /***
    * 如果当前页面的transition为material则肯定不会执行webkitTransitionEnd事件
    */
-  if ((e.type === "webkitTransitionEnd" && e.target.getAttribute("ct-data-role") !== "page") ||
-    (e.type === "webkitAnimationEnd" && e.target.getAttribute("ct-data-role") !== "page")) {
+  if ((e.type === "webkitTransitionEnd" && e.target.getAttribute("data-ct-data-role") !== "page") ||
+    (e.type === "webkitAnimationEnd" && e.target.getAttribute("data-ct-data-role") !== "page")) {
     return;
   }
 
@@ -212,9 +193,12 @@ function pageFinishTransitioneEndCallback(e) {
   /***
    * 删除DOM
    */
-  const ctDataMode = self.ctmobile.getTemplateConfig(self.getPageId(), "ct-data-mode");
+  const ctDataMode = self.ctmobile.getPageConfigAttribute(self.pageId, 'mode');
   if (ctDataMode.toLowerCase().indexOf("singleinstance") === -1) {
-    self.getPageDOM().parentNode.removeChild(self.getPageDOM());
+    const unmountFlag = ReactDOM.unmountComponentAtNode(self.getPageDOM());
+    if (unmountFlag) {
+      self.getPageDOM().parentNode.removeChild(self.getPageDOM());
+    }
   }
 
   if (self.ctmobile.getHistoryLength() > 1) {
@@ -262,8 +246,8 @@ function pageStartTransitionEndCallback(e) {
   /***
    * 如果当前页面的transition为material则肯定不会执行webkitTransitionEnd事件
    */
-  if ((e.type === "webkitTransitionEnd" && e.target.getAttribute("ct-data-role") !== "page") ||
-    (e.type === "webkitAnimationEnd" && e.target.getAttribute("ct-data-role") !== "page")) {
+  if ((e.type === "webkitTransitionEnd" && e.target.getAttribute("data-ct-data-role") !== "page") ||
+    (e.type === "webkitAnimationEnd" && e.target.getAttribute("data-ct-data-role") !== "page")) {
     return;
   }
 
@@ -472,456 +456,588 @@ function slide(x, y, duration, beforeCallback) {
   }
 }
 
+
 /**
- * Page
- * @class Page
- * @classdesc 管理所有和页面相关的操作
+ * Page类
+ * @type {{create: (function())}}
  */
-class Page {
+const Page = {
   /**
-   * @constructor
-   * @param {CtMobile} ctmobile
-   * @param {string} id
+   * 高阶方法
+   * @param el {HtmlElement} - Page的顶层html定义
+   * @return {function(*)}
    */
-  constructor(ctmobile, id) {
-    Object.assign(this, {
-      ctmobile,
-      id,
-      pageId: id.substring(0, id.lastIndexOf("_")),
-      /*** 默认的页面过渡类型 */
-      transition: "material",
-      /*** 页面切换时的锁 */
-      changeKey: false,
-      /*** Page的transition类型[start|finish] */
-      pageTransitionType: null,
-      /*** Page的transitionEnd后的回调函数 */
-      pageTransitionEndCallback: null
-    });
-    createPageDOM.call(this);
-    layout.call(this);
-    return this;
-  }
-
-  /**
-   * 页面创建调用
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageCreate(e) {
-    // console.log(Constant._debugger, "pageCreateParentByParent");
-  }
-
-  /***
-   * 页面显示之前
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageBeforeShow(e) {
-    // console.log(Constant._debugger, "pageBeforeShowByParent");
-  }
-
-  /***
-   * 页面显示
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageShow(e) {
-    // console.log(Constant._debugger, "pageShowByParent");
-  }
-
-  /***
-   *  页面显示之后
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageAfterShow(e) {
-    // console.log(Constant._debugger, "pageAfterShowByParent");
-  }
-
-  /***
-   * 页面暂停之前
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageBeforePause(e) {
-    // console.log(Constant._debugger, "pageBeforePauseByParent");
-  }
-
-  /***
-   * 页面暂停之后
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageAfterPause(e) {
-    // console.log(Constant._debugger, "pageAfterPauseByParent");
-  }
-
-  /***
-   * 页面恢复之前
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageBeforeRestore(e) {
-    // console.log(Constant._debugger, "pageBeforeRestoreByParent");
-  }
-
-  /***
-   * 页面恢复
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageRestore(e) {
-    // console.log(Constant._debugger, "pageRestoreByParent");
-  }
-
-  /***
-   * 页面恢复之后
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageAfterRestore(e) {
-    // console.log(Constant._debugger, "pageAfterRestoreByParent");
-  }
-
-  /***
-   * 页面DOM销毁之前
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageBeforeDestroy(e) {
-    // console.log(Constant._debugger, "pageBeforeDestroyByParent");
-  }
-
-  /***
-   * pageResult
-   * @callback
-   * @override
-   * @param {Object} e - jQuery的event
-   * @param {string} resultCode - 返回的code
-   * @param {Object} bundle - 返回的参数
-   */
-  pageResult(e, resultCode, bundle) {
-    // console.log(Constant._debugger, "pageResult");
-  }
-
-  /***
-   * 如果添加了ct-data-intentfilter-action属性，满足条件后触发
-   * @callback
-   * @override
-   * @param {Object} bundle
-   * @param {Object} functions
-   */
-  pageReceiver(bundle, functions) {
-    // console.log(Constant._debugger, "pageReceiver");
-  }
-
-  /**
-   * 显示
-   * @param {string} duration - 完成显示的时间
-   * @param {Function} callback - 结束时的回调函数
-   */
-  start(duration, callback) {
-    const self = this;
-
-    /***
-     * 如果操作锁定则不进行
-     */
-    if (self.changeKey) return;
-
-    /***
-     * 操作加锁
-     * @type {boolean}
-     */
-    self.changeKey = true;
-
-    /***
-     * 修改transitionEnd的类型
-     * @type {string}
-     */
-    self.pageTransitionType = "start";
-
-    /***
-     * 修改transitionEnd的回调函数
-     */
-    self.pageTransitionEndCallback = callback;
-
-    /***
-     * 最后一页暂停之前事件
-     */
-    if (self.ctmobile.getHistoryLength() !== 0) {
-      self.ctmobile.fireEvent(self.ctmobile.getLastPage().getPageDOM(), "pageBeforePause");
-    }
-
-    /***
-     * 当前页显示前事件
-     */
-    self.ctmobile.fireEvent(self.getPageDOM(), "pageBeforeShow");
-
-    if (duration !== 0) {
-      self.ctmobile.maskDOM.style.display = "block";
-    }
-
-
-    /***
-     * 当前页面显示
-     */
-    self.getPageDOM().classList.add("active");
-    self.getPageDOM().style.zIndex = ++self.ctmobile.zIndex;
-    /***
-     * 当前页显示事件
-     */
-    self.ctmobile.fireEvent(self.getPageDOM(), "pageShow");
-
-    /***
-     * 当前页移动
-     */
-    slideByTransition.call(self, self.transition, "show", duration === 0 ? 0 : Constant._SLIDEDURATION);
-
-    /***
-     * 只有一个页的时候
-     */
-    if (duration === 0) {
-      self.ctmobile.router.addPage(self);
-      self.changeKey = false;
-      self.ctmobile.fireEvent(self.getPageDOM(), "pageAfterShow");
-      if (callback) {
-        callback();
-      }
-    }
-  }
-
-  /**
-   * 销毁
-   * @params {string} duration - 完成显示的时间
-   * @param {Function} callback - 结束时的回调函数
-   * @param {Object} option - 调用startPage的option
-   */
-  finish(duration, callback, option) {
-    const self = this;
-
-    /***
-     * 如果操作锁定则不进行
-     */
-    if (self.changeKey) return;
-
-    /***
-     * 操作加锁
-     * @type {boolean}
-     */
-    self.changeKey = true;
-
-    /***
-     * 修改transitionEnd的类型
-     * @type {string}
-     */
-    self.pageTransitionType = "finish";
-
-    /***
-     * 层级减
-     */
-    self.ctmobile.zIndex--;
-
-    /***
-     * 修改transitionEnd的回调函数
-     */
-    self.pageTransitionEndCallback = callback;
-
-    /***
-     * 当前页销毁之前事件
-     */
-    const ctDataMode = self.ctmobile.getTemplateConfig(self.getPageId(), "ct-data-mode");
-
-    if (ctDataMode.toLowerCase().indexOf("singleinstance") === -1) {
-      self.ctmobile.fireEvent(self.getPageDOM(), "pageBeforeDestroy");
-      self.ctmobile.unregisterReceiverByDom(self.getPageDOM());
-    } else {
-      // 页面暂停之前
-      self.ctmobile.fireEvent(self.getPageDOM(), "pageAfterPause");
-    }
-
-    // _history中最后一个元素之前的索引
-    const lastPrePageIndex = self.ctmobile.getHistoryLength() - 2;
-
-    // (多于一个元素)且(改变浏览器历史)
-    if (self.ctmobile.getHistoryLength() > 1 && (!option || !option.reload)) {
-      /***
-       * 最后一个页之前的页触发恢复之前事件
+  create: (el) => {
+    return (WrappedComponent) => {
+      /**
+       * PageComponent
+       * @class Page
+       * @classdesc 管理所有和页面相关的操作
        */
-      self.ctmobile.fireEvent(self.ctmobile.getPageByIndex(lastPrePageIndex).getPageDOM(), "pageBeforeRestore");
-    }
+      class PageComponent extends React.Component {
+        /**
+         * constructor
+         * @constructor
+         * @param props {Object} - {
+         *    ctmobile:CtMobile,
+         *    id:String,
+         *    config:Object,
+         *    callback:Function
+         * }
+         * @return {PageComponent}
+         */
+        constructor(props) {
+          super(props);
 
-    if (duration !== 0) {
-      self.ctmobile.maskDOM.style.display = "block";
-    }
+          const {ctmobile, id, config = {}} = props;
 
-    // (多于一个元素)且(改变浏览器历史)
-    if (self.ctmobile.getHistoryLength() > 1 && (!option || !option.reload)) {
-      /***
-       * 恢复最后一个页之前的页
-       */
-      self.ctmobile.getPageByIndex(lastPrePageIndex).getPageDOM().classList.add("active");
-      /***
-       * 最后一个页之前的页恢复事件
-       */
-      self.ctmobile.fireEvent(self.ctmobile.getPageByIndex(lastPrePageIndex).getPageDOM(), "pageRestore");
-    }
+          Object.assign(this, {
+            ctmobile,
+            config,
+            _pDom: el,
+            id,
+            pageId: id.substring(0, id.lastIndexOf("_")),
+            /*** 默认的页面过渡类型 */
+            transition: "material",
+            /*** 页面切换时的锁 */
+            changeKey: false,
+            /*** Page的transition类型[start|finish] */
+            pageTransitionType: null,
+            /*** Page的transitionEnd后的回调函数 */
+            pageTransitionEndCallback: null,
+          });
 
-    /***
-     * 重置当前页
-     */
-    slideByTransition.call(this, this.transition, "reset", duration === 0 ? 0 : Constant._SLIDEDURATION);
+          createPageDOM.call(this);
+          layout.call(this);
+        }
 
-    /***
-     * 只有一个页的时候
-     */
-    if (duration === 0) {
-      self.getPageDOM().classList.remove("active");
-      self.changeKey = false;
+        /**
+         * componentDidMount
+         */
+        componentDidMount() {
+          if (this.ins && this.ins.pageCreate) {
+            this.ins.pageCreate();
+          }
 
-      /***
-       * 删除DOM
-       */
-      if (ctDataMode.toLowerCase().indexOf("singleinstance") === -1) {
-        self.getPageDOM().parentNode.removeChild(self.getPageDOM());
-      }
+          const pageId = this.getPageId();
+          const ctDataMode = this.ctmobile.getPageConfigAttribute(pageId, 'mode');
 
-      // (多于一个元素)且(改变浏览器历史)
-      if (self.ctmobile.getHistoryLength() > 1 && (!option || !option.reload)) {
-        self.ctmobile.fireEvent(self.ctmobile.getPageByIndex(lastPrePageIndex).getPageDOM(), "pageAfterRestore");
-        if (
-          (ctDataMode.toLowerCase().lastIndexOf("result") !== -1) &&
-          self.resultIntent &&
-          self.resultIntent.resultCode) {
-          self.ctmobile.fireEvent(
-            self.ctmobile.getPageByIndex(lastPrePageIndex).getPageDOM(),
-            "pageResult",
-            [self.resultIntent.resultCode, self.resultIntent.bundle]
+          /***
+           * 如果是singleInstance 或 singleInstanceResult
+           */
+          if (ctDataMode.toLowerCase().indexOf("singleinstance") !== -1) {
+            if (!this.ctmobile.getSingleInstance(pageId)) {
+              this.ctmobile.singleInstances[pageId] = this;
+            }
+          }
+
+          if (this.props.callback) {
+            this.props.callback(this);
+          }
+        }
+
+        /**------------------- 生命周期函数 start-----------------**/
+
+        /***
+         * 页面显示之前
+         * @callback
+         * @override
+         * @param {Object} e
+         */
+        pageBeforeShow(e) {
+          if (this.ins && this.ins.pageBeforeShow) {
+            this.ins.pageBeforeShow(e);
+          }
+        }
+
+        /***
+         * 页面显示
+         * @callback
+         * @override
+         * @param {Object} e
+         */
+        pageShow(e) {
+          if (this.ins && this.ins.pageShow) {
+            this.ins.pageShow(e);
+          }
+        }
+
+        /***
+         *  页面显示之后
+         * @callback
+         * @override
+         * @param {Object} e
+         */
+        pageAfterShow(e) {
+          if (this.ins && this.ins.pageAfterShow) {
+            this.ins.pageAfterShow(e);
+          }
+        }
+
+        /***
+         * 页面暂停之前
+         * @callback
+         * @override
+         * @param {Object} e
+         */
+        pageBeforePause(e) {
+          if (this.ins && this.ins.pageBeforePause) {
+            this.ins.pageBeforePause(e);
+          }
+        }
+
+        /***
+         * 页面暂停之后
+         * @callback
+         * @override
+         * @param {Object} e
+         */
+        pageAfterPause(e) {
+          if (this.ins && this.ins.pageAfterPause) {
+            this.ins.pageAfterPause(e);
+          }
+        }
+
+        /***
+         * 页面恢复之前
+         * @callback
+         * @override
+         * @param {Object} e
+         */
+        pageBeforeRestore(e) {
+          if (this.ins && this.ins.pageBeforeRestore) {
+            this.ins.pageBeforeRestore(e);
+          }
+        }
+
+        /***
+         * 页面恢复
+         * @callback
+         * @override
+         * @param {Object} e
+         */
+        pageRestore(e) {
+          if (this.ins && this.ins.pageRestore) {
+            this.ins.pageRestore(e);
+          }
+        }
+
+        /***
+         * 页面恢复之后
+         * @callback
+         * @override
+         * @param {Object} e
+         */
+        pageAfterRestore(e) {
+          if (this.ins && this.ins.pageAfterRestore) {
+            this.ins.pageAfterRestore(e);
+          }
+        }
+
+        /***
+         * 页面DOM销毁之前
+         * @callback
+         * @override
+         * @param {Object} e
+         */
+        pageBeforeDestroy(e) {
+          if (this.ins && this.ins.pageBeforeDestroy) {
+            this.ins.pageBeforeDestroy(e);
+          }
+        }
+
+        /***
+         * pageResult
+         * @callback
+         * @override
+         * @param {Object} e - jQuery的event
+         * @param {string} resultCode - 返回的code
+         * @param {Object} bundle - 返回的参数
+         */
+        pageResult(e, resultCode, bundle) {
+          if (this.ins && this.ins.pageResult) {
+            this.ins.pageResult(e, resultCode, bundle);
+          }
+        }
+
+        /***
+         * 如果添加了ct-data-intentfilter-action属性，满足条件后触发
+         * @callback
+         * @override
+         * @param {Object} bundle
+         * @param {Object} functions
+         */
+        pageReceiver(bundle, functions) {
+          if (this.ins && this.ins.pageReceiver) {
+            this.ins.pageReceiver(bundle, functions);
+          }
+        }
+
+
+        /**------------------- 生命周期函数 end-----------------**/
+
+        /**
+         * 显示
+         * @param {string} duration - 完成显示的时间
+         * @param {Function} callback - 结束时的回调函数
+         */
+        start(duration, callback) {
+          const self = this;
+
+          /***
+           * 如果操作锁定则不进行
+           */
+          if (self.changeKey) return;
+
+          /***
+           * 操作加锁
+           * @type {boolean}
+           */
+          self.changeKey = true;
+
+          /***
+           * 修改transitionEnd的类型
+           * @type {string}
+           */
+          self.pageTransitionType = "start";
+
+          /***
+           * 修改transitionEnd的回调函数
+           */
+          self.pageTransitionEndCallback = callback;
+
+          /***
+           * 最后一页暂停之前事件
+           */
+          if (self.ctmobile.getHistoryLength() !== 0) {
+            self.ctmobile.fireEvent(self.ctmobile.getLastPage().getPageDOM(), "pageBeforePause");
+          }
+
+          /***
+           * 当前页显示前事件
+           */
+          self.ctmobile.fireEvent(self.getPageDOM(), "pageBeforeShow");
+
+          if (duration !== 0) {
+            self.ctmobile.maskDOM.style.display = "block";
+          }
+
+
+          /***
+           * 当前页面显示
+           */
+          self.getPageDOM().classList.add("active");
+          self.getPageDOM().style.zIndex = ++self.ctmobile.zIndex;
+          /***
+           * 当前页显示事件
+           */
+          self.ctmobile.fireEvent(self.getPageDOM(), "pageShow");
+
+          /***
+           * 当前页移动
+           */
+          slideByTransition.call(self, self.transition, "show", duration === 0 ? 0 : Constant._SLIDEDURATION);
+
+          /***
+           * 只有一个页的时候
+           */
+          if (duration === 0) {
+            self.ctmobile.router.addPage(self);
+            self.changeKey = false;
+            self.ctmobile.fireEvent(self.getPageDOM(), "pageAfterShow");
+            if (callback) {
+              callback();
+            }
+          }
+        }
+
+        /**
+         * 销毁
+         * @params {string} duration - 完成显示的时间
+         * @param {Function} callback - 结束时的回调函数
+         * @param {Object} option - 调用startPage的option
+         */
+        finish(duration, callback, option) {
+          const self = this;
+
+          /***
+           * 如果操作锁定则不进行
+           */
+          if (self.changeKey) return;
+
+          /***
+           * 操作加锁
+           * @type {boolean}
+           */
+          self.changeKey = true;
+
+          /***
+           * 修改transitionEnd的类型
+           * @type {string}
+           */
+          self.pageTransitionType = "finish";
+
+          /***
+           * 层级减
+           */
+          self.ctmobile.zIndex--;
+
+          /***
+           * 修改transitionEnd的回调函数
+           */
+          self.pageTransitionEndCallback = callback;
+
+          /***
+           * 当前页销毁之前事件
+           */
+          const ctDataMode = self.ctmobile.getPageConfigAttribute(self.getPageId(), 'mode');
+
+          if (ctDataMode.toLowerCase().indexOf("singleinstance") === -1) {
+            self.ctmobile.fireEvent(self.getPageDOM(), "pageBeforeDestroy");
+            self.ctmobile.unregisterReceiverByDom(self.getPageDOM());
+          } else {
+            // 页面暂停之前
+            self.ctmobile.fireEvent(self.getPageDOM(), "pageAfterPause");
+          }
+
+          // _history中最后一个元素之前的索引
+          const lastPrePageIndex = self.ctmobile.getHistoryLength() - 2;
+
+          // (多于一个元素)且(改变浏览器历史)
+          if (self.ctmobile.getHistoryLength() > 1 && (!option || !option.reload)) {
+            /***
+             * 最后一个页之前的页触发恢复之前事件
+             */
+            self.ctmobile.fireEvent(self.ctmobile.getPageByIndex(lastPrePageIndex).getPageDOM(), "pageBeforeRestore");
+          }
+
+          if (duration !== 0) {
+            self.ctmobile.maskDOM.style.display = "block";
+          }
+
+          // (多于一个元素)且(改变浏览器历史)
+          if (self.ctmobile.getHistoryLength() > 1 && (!option || !option.reload)) {
+            /***
+             * 恢复最后一个页之前的页
+             */
+            self.ctmobile.getPageByIndex(lastPrePageIndex).getPageDOM().classList.add("active");
+            /***
+             * 最后一个页之前的页恢复事件
+             */
+            self.ctmobile.fireEvent(self.ctmobile.getPageByIndex(lastPrePageIndex).getPageDOM(), "pageRestore");
+          }
+
+          /***
+           * 重置当前页
+           */
+          slideByTransition.call(this, this.transition, "reset", duration === 0 ? 0 : Constant._SLIDEDURATION);
+
+          /***
+           * 只有一个页的时候
+           */
+          if (duration === 0) {
+            self.getPageDOM().classList.remove("active");
+            self.changeKey = false;
+
+            /***
+             * 删除DOM
+             */
+            if (ctDataMode.toLowerCase().indexOf("singleinstance") === -1) {
+              const unmountFlag = ReactDOM.unmountComponentAtNode(self.getPageDOM());
+              if (unmountFlag) {
+                self.getPageDOM().parentNode.removeChild(self.getPageDOM());
+              }
+            }
+
+            // (多于一个元素)且(改变浏览器历史)
+            if (self.ctmobile.getHistoryLength() > 1 && (!option || !option.reload)) {
+              self.ctmobile.fireEvent(self.ctmobile.getPageByIndex(lastPrePageIndex).getPageDOM(), "pageAfterRestore");
+              if (
+                (ctDataMode.toLowerCase().lastIndexOf("result") !== -1) &&
+                self.resultIntent &&
+                self.resultIntent.resultCode) {
+                self.ctmobile.fireEvent(
+                  self.ctmobile.getPageByIndex(lastPrePageIndex).getPageDOM(),
+                  "pageResult",
+                  [self.resultIntent.resultCode, self.resultIntent.bundle]
+                );
+              }
+            }
+
+            // (多于一个元素)且(不改变浏览器历史)
+            if (self.ctmobile.getHistoryLength() > 1 && option && option.reload) {
+              self.ctmobile.router.removePageByIndex(lastPrePageIndex, 1);
+            } else {
+              // 出stack
+              self.ctmobile.router.removeLastPage();
+            }
+
+            if (callback) {
+              callback();
+            }
+          }
+        }
+
+        /**
+         * 获取page的DOM对象
+         * @returns {HtmlElement}
+         */
+        getPageDOM() {
+          return this._pDom;
+        }
+
+        /**
+         * 获取当前页面的jQuery对象
+         * @returns {*|jQuery|HTMLElement}
+         */
+        getPageJO() {
+          if (!this._pJO) {
+            this._pJO = $(this.getPageDOM());
+          }
+          return this._pJO;
+        }
+
+        /**
+         * 获取page的实际id
+         * @returns {*}
+         */
+        getId() {
+          return this.id;
+        }
+
+        /**
+         * 获取克隆的pageId
+         * @returns {*}
+         */
+        getPageId() {
+          return this.pageId;
+        }
+
+        /**
+         * 设置请求参数
+         * 页面之前传递参数的另一种形式(类似于android的intent)
+         * @param {String} requestCode
+         * @param {Object} bundle
+         */
+        setRequest(requestCode = "", bundle = {}) {
+          this.requestIntent = {
+            requestCode: requestCode,
+            bundle: bundle
+          };
+        }
+
+        /**
+         * 获取父页面的请求参数
+         * 只有在页面的pageAfterShow中才可以调用此方法获取上一页面调用setRequest传递的参数
+         * @param {Function} callback
+         * @return {Object} - {
+         *   requestCode:String
+         *   bundle:Object
+         * }
+         */
+        getRequest(callback) {
+          return this.ctmobile.getRequest(this);
+        }
+
+        /**
+         * 设置返回值
+         * 设置返回父页面的数据
+         * @param {String} resultCode
+         * @param {Object} bundle
+         */
+        setResult(resultCode = "", bundle = {}) {
+          this.resultIntent = {
+            resultCode: resultCode,
+            bundle: bundle,
+          };
+        }
+
+        /**
+         * 获取resultIntent
+         * @param {Function} callback
+         * @return {Object}
+         */
+        getResult(callback) {
+          return this.resultIntent;
+        }
+
+        /**
+         * 当前页面ct-data-mode设置为result或singleInstanceResult时,向父页面返回参数时调用over
+         * 只有设置了setRequest后在调用over父页面才能触发pageResult事件
+         */
+        over() {
+          go.call(this, -1);
+        }
+
+        /**
+         * 获取CtMobile实例
+         * @return {CtMobile|*}
+         */
+        getCtMobile() {
+          return this.ctmobile;
+        }
+
+        render() {
+          const mergeProps = {
+            parent:this,
+            _pDom: this._pDom,
+            pageId: this.pageId,
+            getInstance: (ins) => {
+              this.ins = ins;
+            },
+          };
+
+          return (
+            <Provider value={this.getCtMobile()}>
+              <WrappedComponent {...mergeProps} {...this.props} />
+            </Provider>
           );
         }
       }
 
-      // (多于一个元素)且(不改变浏览器历史)
-      if (self.ctmobile.getHistoryLength() > 1 && option && option.reload) {
-        self.ctmobile.router.removePageByIndex(lastPrePageIndex, 1);
-      } else {
-        // 出stack
-        self.ctmobile.router.removeLastPage();
-      }
+      /**
+       * CheckWrappedComponentProps
+       */
+      WrappedComponent.propTypes = {
+        ctmobile: PropTypes.object,
+        id: PropTypes.string,
+        config: PropTypes.object,
+        callback: PropTypes.func,
+        parent:PropTypes.object,
+        _pDom:PropTypes.object,
+        pageId: PropTypes.string,
+        getInstance: PropTypes.func,
+      };
 
-      if (callback) {
-        callback();
+      /**
+       * CheckPageComponentProps
+       * @type {{name: *}}
+       */
+      PageComponent.propTypes = {
+        ctmobile: PropTypes.object,
+        id: PropTypes.string,
+        config: PropTypes.object,
+        callback: PropTypes.func
+      };
+
+      return PageComponent;
+    }
+  },
+  /**
+   * @class WrappedPage
+   * @classdesc Page的基类用来获取本身的instance
+   */
+  WrappedPage: class extends React.Component {
+    constructor(props) {
+      super(props);
+    }
+
+    componentDidMount() {
+      if (this.props.getInstance) {
+        this.props.getInstance(this);
       }
     }
   }
-
-  /**
-   * 获取page的DOM对象
-   * @returns {HtmlElement}
-   */
-  getPageDOM() {
-    return this._pDom;
-  }
-
-  /**
-   * 获取当前页面的jQuery对象
-   * @returns {*|jQuery|HTMLElement}
-   */
-  getPageJO() {
-    if (!this._pJO) {
-      this._pJO = $(this.getPageDOM());
-    }
-    return this._pJO;
-  }
-
-  /**
-   * 获取page的实际id
-   * @returns {*}
-   */
-  getId() {
-    return this.id;
-  }
-
-  /**
-   * 获取克隆的pageId
-   * @returns {*}
-   */
-  getPageId() {
-    return this.pageId;
-  }
-
-  /**
-   * 设置请求参数
-   * 页面之前传递参数的另一种形式(类似于android的intent)
-   * @param {String} requestCode
-   * @param {Object} bundle
-   */
-  setRequest(requestCode = "", bundle = {}) {
-    this.requestIntent = {
-      requestCode: requestCode,
-      bundle: bundle
-    };
-  }
-
-  /**
-   * 获取父页面的请求参数
-   * 只有在页面的pageAfterShow中才可以调用此方法获取上一页面调用setRequest传递的参数
-   * @param {Function} callback
-   * @return {Object} - {
-   *   requestCode:String
-   *   bundle:Object
-   * }
-   */
-  getRequest(callback) {
-    return this.ctmobile.getRequest(this);
-  }
-
-  /**
-   * 设置返回值
-   * 设置返回父页面的数据
-   * @param {String} resultCode
-   * @param {Object} bundle
-   */
-  setResult(resultCode = "", bundle = {}) {
-    this.resultIntent = {
-      resultCode: resultCode,
-      bundle: bundle,
-    };
-  }
-
-  /**
-   * 获取resultIntent
-   * @param {Function} callback
-   * @return {Object}
-   */
-  getResult(callback) {
-    return this.resultIntent;
-  }
-
-  /**
-   * 当前页面ct-data-mode设置为result或singleInstanceResult时,向父页面返回参数时调用over
-   * 只有设置了setRequest后在调用over父页面才能触发pageResult事件
-   */
-  over() {
-    go.call(this, -1);
-  }
-
-  /**
-   * 获取CtMobile实例
-   * @return {CtMobile|*}
-   */
-  getCtMobile() {
-    return this.ctmobile;
-  }
-}
+};
 
 export default Page;

@@ -1,0 +1,45 @@
+.AppWaterfallView {
+  display: flex;
+  padding: 0 1rem;
+  overflow: auto;
+  > .AppWaterfallViewColumn {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+    min-width: 50%;
+    > li {
+      margin: .5rem .25rem;
+      border-radius: 3px;
+      border: 1px solid rgba(0, 0, 0, .1);
+      padding: .5rem;
+      > a {
+        display: block;
+        > .title , .info {
+          overflow: hidden;
+          -webkit-box-orient: vertical;
+          display: -webkit-box;
+          font-size: 15px;
+          line-height: 21px;
+          word-break: break-word;
+        }
+        > .title {
+          -webkit-line-clamp: 2;
+          max-height: 42px;
+          color: #000;
+        }
+        > .info {
+          text-overflow: ellipsis;
+          color: #8e8e93;
+          max-height: 63px;
+          -webkit-line-clamp: 3;
+        }
+        > .createTime {
+          font-size: 15px;
+          color: #8e8e93;
+          margin-top: .5rem;
+        }
+      }
+    }
+  }
+}

@@ -36,3 +36,6 @@ npm-debug
 .zip
 
 .vscode
+
+demo/src/ctmobile-react
+note/src/ctmobile-react

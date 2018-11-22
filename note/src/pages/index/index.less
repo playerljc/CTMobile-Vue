@@ -1,0 +1,39 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  > .AppView {
+    flex-grow: 1;
+    overflow: auto;
+    overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    transform-origin: center center;
+    animation-fill-mode: forwards;
+  }
+}
+
+.anm1 {
+  animation: anm1 .5s linear;
+}
+
+@keyframes anm1 {
+  0% {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
+
+  10% {
+    transform: scale(1, 1);
+    opacity: .3;
+  }
+
+  50% {
+    transform: scale(0, 0);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
+}
