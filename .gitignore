@@ -38,4 +38,6 @@ npm-debug
 .vscode
 
 demo/src/ctmobile-react
+demo/src/assets/dll
 note/src/ctmobile-react
+note/src/assets/dll
