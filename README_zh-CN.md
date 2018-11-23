@@ -510,7 +510,7 @@ const Router = {
 
 | 属性(property)                 | 取值                 | 说明                                                     |
 | ------------------------------ | -------------------- | -------------------------------------------------------- |
-| transition             	 | slideleft            | 从右到左(overlay)                                        |
+| transition             	       | slideleft            | 从右到左(overlay)                                        |
 |                                | slideright           | 从左到右(overlay)                                        |
 |                                | slideup              | 从下到上(overlay)                                        |
 |                                | slidedown            | 从上到下(overlay)                                        |
@@ -523,14 +523,14 @@ const Router = {
 |                                | pushslideup          | 从下到上(push)                                           |
 |                                | pushslidedown        | 从上到下(push)                                           |
 |                                | material(缺省)       | Android Material的风格                                   |
-| mode                   	 | standard(缺省)       | 多例                                                     |
+| mode                   	       | standard(缺省)       | 多例                                                     |
 |                                | single               | 单例(当点击返回时，会销毁)                               |
 |                                | singleInstance       | 完全单例(不会被销毁)                                     |
 |                                | result               | 带有返回值的(可以向父页面带回返回值)                     |
 |                                | singleInstanceResult | 带有返回值的完全单例(不会被销毁，可以向父页面带回返回值) |
-| intentfilterAction    	 | string               | 如果页面要订阅通知时的标识                               |
-| intentfilterCategorys 	 | [string1 string2 …]  | 订阅时的过滤参数                                         |
-| intentfilterPriority  	 | number 0(缺省)       | 发送有序广播时的优先级，默认值是0                        |
+| intentfilterAction    	       | string               | 如果页面要订阅通知时的标识                               |
+| intentfilterCategorys 	       | [string1 string2 …]  | 订阅时的过滤参数                                         |
+| intentfilterPriority  	       | number 0(缺省)       | 发送有序广播时的优先级，默认值是0                        |
 
 ## CtMobile应用程序展示
 
