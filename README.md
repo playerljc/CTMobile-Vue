@@ -46,6 +46,9 @@ $ npm install react --save
 $ npm install react-dom --save
 $ npm install ctmobile-react --save
 ```
+##  API documentation
+[docs](https://playerljc.github.io/ctmobile-react/index.html)
+
 ## Quick start
 
 **1. Initialize the application**
