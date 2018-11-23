@@ -507,7 +507,7 @@ const Router = {
  }
  ```
 
-## 属性配置
+## Attribute configuration
 * Configuration of config in the router
 
 | property                 | value                 | describe                                                     |
