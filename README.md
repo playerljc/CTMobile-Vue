@@ -70,7 +70,7 @@ const App = CtMobile.CtMobileFactory.create({
     router: Router,
 });
 ```
-&ensp;Detailed parameter explanation please refer to[属性配置](#属性配置)。
+&ensp;Detailed parameter explanation please refer to[Attribute configuration](#Attribute configuration)。
 
 **2. Router**
 -----
@@ -143,7 +143,7 @@ componentDidMount() {
     super.componentDidMount(...arguments);
 }
 ```
-&ensp;&ensp;Among them pageCreate, pageShow and pageBeforeDestory are the life cycle functions of Page, more life cycle functions please refer to[Page的生命周期](#8-page的生命周期)
+&ensp;&ensp;Among them pageCreate, pageShow and pageBeforeDestory are the life cycle functions of Page, more life cycle functions please refer to[Page life cycle](#8-Page life cycle)
 
 **4. Jump to a new page**
 -----------
@@ -311,7 +311,7 @@ Set the mode attribute value in the config of the Router. The framework supports
  * result
   &ensp;&ensp;With a return value (you can bring back the return value to the parent page)
 
-  &ensp;&ensp;[参见带有返回值的页面](#6-带有返回值的页面)
+  &ensp;&ensp;[Page with return value](#6-Page with return value)
 
  * singleInstanceResult
   &ensp;&ensp;A complete singleton with a return value (will not be destroyed, can bring back the return value to the parent page)
@@ -322,7 +322,7 @@ Set the mode attribute value in the config of the Router. The framework supports
 ---------
 Page 1 has a total of 10 life cycle functions
 
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;![](https://github.com/playerljc/CTMobile/raw/master/outimages/pagelife.png "Page生命周期")
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;![](https://github.com/playerljc/CTMobile/raw/master/outimages/pagelife.png "Page life cycle")
 
 **9. Page transition effect**
 ---------
