@@ -555,7 +555,7 @@ $ npm start
 ```
 Enter localhost:8001 on your browser to access the main page of the demo.
 
-![](https://github.com/playerljc/CTMobile-React/raw/master/outimages/note-index.png "note")
+![](https://github.com/playerljc/CTMobile-React/blob/master/outimages/note/note-index.png "note")
 
 ## Discussion group
 ![](https://github.com/playerljc/CTMobile/raw/master/outimages/qq.png "Discussion group")
