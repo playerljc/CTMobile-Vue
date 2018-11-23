@@ -1,5 +1,5 @@
 {
-  "name": "ctmobile-react",
+  "name": "@ctmobile/react",
   "version": "1.0.0",
   "description": "CTMobile的React实现",
   "main": "lib/index.js",
