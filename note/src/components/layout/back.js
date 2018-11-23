@@ -1,5 +1,5 @@
 import React from 'react';
-import CtMobile from "ctmobile-react";
+import CtMobile from "@ctmobile/react";
 
 const {Back} = CtMobile;
 

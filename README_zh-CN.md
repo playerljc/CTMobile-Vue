@@ -56,7 +56,7 @@ $ npm install @ctmobile/react --save
 --------
 
 ```js
-import CtMobile from "ctmobile-react";
+import CtMobile from '@ctmobile/react';
 const Router = {
     index: {
       component: import(/* webpackChunkName: "index" */ "../pages/index"),
@@ -100,7 +100,7 @@ const App = CtMobile.CtMobileFactory.create({
 
 ```js
 import React from 'react';
-import CtMobile from "ctmobile-react";
+import CtMobile from '@ctmobile/react';
 
 export default class extends CtMobile.Page.WrappedPage {
     constructor(props) {
@@ -155,7 +155,7 @@ componentDidMount() {
 * 标签方式
 ```js
 import React from 'react';
-import CtMobile from "ctmobile-react";
+import CtMobile from '@ctmobile/react';
 const {Link, Back} = CtMobile;
 
 <Link pageId="info">跳转到info页面</Link>
@@ -221,7 +221,7 @@ const Router = {
 &ensp;&ensp;index.js定义
 ```js
 import React from 'react';
-import CtMobile from 'ctmobile-react';
+import CtMobile from '@ctmobile/react';
 
 const {Link} = CtMobile;
 
@@ -258,7 +258,7 @@ export default class extends CtMobile.Page.WrappedPage {
 &ensp;&ensp;PopUpDialog.js的定义
 ```js
 import React from 'react';
-import CtMobile from 'ctmobile-react';
+import CtMobile from '@ctmobile/react';
 
 export default class extends CtMobile.Page.WrappedPage {
   constructor(props){
@@ -355,7 +355,7 @@ Page一共有10个生命周期函数
    Page中重写pageReceiver方法
    ```js
    import React from 'react';
-   import CtMobile from 'ctmobile-react';
+   import CtMobile from '@ctmobile/react';
    export default class extends CtMobile.Page.WrappedPage {
       constructor(props){
         super(props);
@@ -385,7 +385,7 @@ Page一共有10个生命周期函数
  * 通过api注册
    ```js
    import React from 'react';
-   import CtMobile from 'ctmobile-react';
+   import CtMobile from '@ctmobile/react';
    export default class extends CtMobile.Page.WrappedPage {
      constructor(props){
        super(props);
@@ -497,7 +497,7 @@ const Router = {
  * 使用Back进行页面的返回
  ```js
  import React from 'react';
- import CtMobile from 'ctmobile-react';
+ import CtMobile from '@ctmobile/react';
  const {Back} = CtMobile;
 
  export default class extends CtMobile.Page.WrappedPage {

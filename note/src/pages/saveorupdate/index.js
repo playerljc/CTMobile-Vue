@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import uuidv1 from 'uuid/v1';
-import CtMobile from "ctmobile-react";
+import CtMobile from "@ctmobile/react";
 import {AppLayout, AppHeader, AppContent, AppFooter, AppBack} from '../../components/layout';
 import DAO from '../../util/DAO';
 
