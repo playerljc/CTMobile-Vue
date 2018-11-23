@@ -44,7 +44,7 @@
 ```bash
 $ npm install react --save
 $ npm install react-dom --save
-$ npm install ctmobile-react --save
+$ npm install @ctmobile/react --save
 ```
 
 ##  API文档
