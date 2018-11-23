@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: CtMobile.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: CtMobile.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/***
+ * Created by playerljc on 2018/11/13.
+ * CtMobile.js
+ * CtMobie-React移动端开发框架，基于React
+ */
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import $ from "jquery";
+import Page from "./Page";
+import Router from "./Router";
+import BorasdCast from "./BorasdCast";
+
+/**
+ * 页面载入完成后,支持Promise
+ * @access private
+ * @callback
+ * @return {Promise}
+ */
+function readyPromise() {
+  return new Promise((resolve) => {
+    $(window.document).ready(() => {
+      resolve();
+    });
+  });
+}
+
+/**
+ * DOM载入完成后，支持Promise
+ * @access private
+ * @callback
+ * @return {Promise}
+ */
+function DOMContentLoadedPromise() {
+  return new Promise((resolve) => {
+    window.addEventListener("DOMContentLoaded", () => {
+      resolve();
+    });
+  });
+}
+
+/**
+ * cordova的设备载入完成后的回调函数,支持Promise
+ * @access private
+ * @callback
+ * @return {Promise}
+ */
+function devicereadyPromise() {
+  return new Promise((resolve) => {
+    window.document.addEventListener("deviceready", () => {
+      resolve();
+    });
+  });
+}
+
+/**
+ * 触发自定义的Html事件
+ * @access private
+ * @param {HtmlElement} dom - 触发的HTML对象
+ * @param {string} type - 触发的事件
+ * @param {Array} params - 参数
+ */
+function fireEvent(dom, type, params = []) {
+  $(dom).trigger(type, params);
+}
+
+/**
+ * 通过ID创建Page对象
+ * @access private
+ * @param {string} id
+ * @param {Function} callback ReactDOM.render后的回调函数
+ * @return {Promise}
+ */
+function createPage(id, callback) {
+  return new Promise((resolve, reject) => {
+    const pageId = id.substring(0, id.lastIndexOf("_"));
+
+    const ctDataMode = this.getPageConfigAttribute(pageId, 'mode');
+    const singleInstance = this.getSingleInstance(pageId);
+    if (ctDataMode.toLowerCase().indexOf("singleinstance") !== -1 &amp;&amp; singleInstance) {
+      if (callback) {
+        callback(singleInstance);
+      }
+      resolve();
+    } else {
+      let ReactComponent;
+      const pageRouterConfig = this.config.router[pageId];
+      if (pageRouterConfig) {
+        // 路由中配置的ReactComponent
+        const component = pageRouterConfig.component;
+        if (component &amp;&amp; component.then) {
+          component.then((ReactComponentWrap) => {
+            if (ReactComponentWrap) {
+              // 每个页的逻辑组件
+              ReactComponent = ReactComponentWrap.default;
+              // 顶层容器
+              const el = $(`&lt;div data-ct-data-role="page">&lt;/div>`)[0];
+              document.body.appendChild(el);
+              // 包装逻辑组件
+              const WrappedComponent = Page.create(el)(ReactComponent);
+              // 包装逻辑组件放入顶层容器
+              ReactDOM.render(
+                &lt;WrappedComponent
+                  ctmobile={this}
+                  id={id}
+                  // ct-data的一系列配置
+                  config={pageRouterConfig.config || {}}
+                  // componentDidMount后的操作
+                  callback={callback}
+                />
+                ,
+                el,
+                () => {
+                  resolve();
+                }
+              );
+            } else {
+              reject();
+            }
+          }).catch((error) => {
+            reject(error);
+          });
+        } else {
+          reject();
+        }
+      } else {
+        reject();
+      }
+    }
+
+  });
+}
+
+/**
+ * 页面载入完成的回调函数
+ * @access private
+ * @callback
+ */
+function onReady() {
+  const self = this;
+
+  /***
+   * 判断页面是否已经ready
+   */
+  if (this.hasInited) return;
+  this.hasInited = true;
+
+  /***
+   * window.document.body的jQuery
+   */
+  this.bodyDOM = window.document.body;
+
+  /***
+   * 存放完全单例对象的容器
+   */
+  this.singleInstances = null;
+
+  /***
+   * 创建page切换时的遮罩层
+   */
+  this.maskDOM = $(
+    "&lt;div class='ct-page-mask'>" +
+    " &lt;div opt='animation' class='la-ball-circus la-dark' style='color:#3e98f0;'>" +
+    "   &lt;div>&lt;/div>" +
+    "   &lt;div>&lt;/div>" +
+    "   &lt;div>&lt;/div>" +
+    "   &lt;div>&lt;/div>" +
+    "   &lt;div>&lt;/div>" +
+    " &lt;/div>" +
+    "&lt;/div>")[0];
+  this.bodyDOM.appendChild(this.maskDOM);
+
+  fireEvent(window.document, "pageBeforeChange", [CtMobileFactory.getUrlParam(window.location.hash)]);
+  /***
+   * 初始化第一页
+   * TODO:初始化第一页
+   */
+  createPage.call(this, this.getFirstId(), (Component) => {
+    Component.start(0, () => {
+        /***
+         * if(有hash值) 加载的不是首页而是某一个指定的页面 {
+         *   调用startPage即可
+         *   startPage需要三部分值
+         *   1.html的路径
+         *   2.pageId
+         *   3.parameter
+         * }
+         */
+        const hash = window.location.hash;
+        if (!hash) return false;
+
+        const pageId = self.getPageIdByHash();
+        if (!pageId) return false;
+
+        const url = `#${pageId}`;
+        const parameter = self.getParameterByHash();
+        const searchObj = CtMobileFactory.getUrlParam(`${url}${parameter}`);
+
+        self.startPage(`${url}${parameter}${parameter ? (searchObj.pageId ? '' : `&amp;pageId=${pageId}`) : `?pageId=${pageId}`}`, {
+          reload: self.config.linkCaptureReload
+        });
+      }
+    );
+  });
+
+}
+
+/**
+ * initCtMobile
+ * @access private
+ */
+function init() {
+  const {supportCordova = false} = this.config;
+
+  onReady = onReady.bind(this);
+
+  /***
+   * 如果开启了对cordova的支持
+   */
+  if (supportCordova) {
+    /***
+     * 如果开启了对cordova的支持，那么页面完成事件和cordova的deviceReady事件必须同时完成后才能支持后续代码
+     */
+    Promise.all([
+      readyPromise(),
+      DOMContentLoadedPromise(),
+      devicereadyPromise()
+    ]).then(() => {
+      onReady();
+      fireEvent(window.document, "DOMContentAndDeviceReady");
+    }).catch((error) => {
+
+    });
+  }
+  else {
+    /***
+     * 页面载入完成事件
+     */
+    $(window.document).ready(onReady);
+
+    /***
+     * 自动 init
+     */
+    window.addEventListener("DOMContentLoaded", onReady);
+  }
+}
+
+/**
+ * CtMobile
+ * @class CtMobile
+ * @classdesc 管理所有的行为
+ */
+class CtMobile {
+  /**
+   * @constructor
+   * @param {Object} config -
+   * config {
+   *   supportCordova: [true | false],是否支持cordova,默认为false
+   *   linkCaptureReload: [true | false],&lt;a>标签加载页面是否改变浏览器历史,默认为true
+   *   router: Object {
+   *        id (ct-data-role="page"的id属性): Object{
+   *          component: Function (返回一个Prmise)
+   *          config: Object {
+   *            transition: {string} - 过度类型
+   *            mode: {string} - 启动类型
+   *            intentfilterAction: {string} - 通知的actioon
+   *            intentfilterCategorys: {string} - 通知的categorys
+   *            intentfilterPriority: {string} - 通知的proirity
+   *          }
+   *        }
+   *      }
+   *   }
+   */
+  constructor(config) {
+    this.config = config;
+
+    // 是否初始化过
+    this.hasInited = false;
+
+    // page的zIndex
+    this.zIndex = 0;
+
+    // 路由对象
+    this.router = new Router(this);
+    // 广播对象
+    this.borasdcast = new BorasdCast();
+
+    init.call(this);
+  }
+
+  /**
+   * 页面跳转
+   * @param {string} href - (pageId = pageId + params) 如: page1?a=1&amp;b=2;
+   * @param {Object} option {
+   *   reload : [true | false]
+   * }
+   */
+  startPage(href, option) {
+    this.router.startPage(href, option);
+  }
+
+  /**
+   * 通过ID创建Page对象
+   * @param {string} id
+   * @param {Function} callback
+   * @return {Page}
+   */
+  createPage(id, callback) {
+    return createPage.call(this, id, callback);
+  }
+
+  /**
+   * 返回
+   */
+  back() {
+    this.router.go(-1);
+  }
+
+  /**
+   * 获取Page的配置信息
+   * @param pageId {string} pageId
+   * @param property {string} property
+   * @return {string}
+   *
+   * transition: {string} - 过度类型
+   * mode: {string} - 启动类型
+   * intentfilterAction: {string} - 通知的actioon
+   * intentfilterCategorys: {string} - 通知的categorys
+   * intentfilterPriority: {string} - 通知的proirity
+   */
+  getPageConfigAttribute(pageId, property) {
+    const router = this.config.router[pageId];
+    if (router.config) {
+      let value = router.config[property];
+      if (!value) {
+        switch (property) {
+          case 'mode':
+            value = 'standard';
+            break;
+          case 'transition':
+            value = 'material';
+            break;
+        }
+      }
+      return value;
+    } else {
+      let value = '';
+      switch (property) {
+        case 'mode':
+          value = 'standard';
+          break;
+        case 'transition':
+          value = 'material';
+          break;
+      }
+      return value;
+    }
+  }
+
+  /**
+   * 获取第一页真正的ID
+   * @return {string}
+   */
+  getFirstId() {
+    return this.getId(this.getFirstPageId());
+  }
+
+  /**
+   * 根据模板page的ID获取真正page的ID
+   * 注释:pageId_时间戳?parameters
+   * @param {string} pageId
+   * @return {string}
+   */
+  getId(pageId) {
+    let id = "";
+
+    const index = pageId.indexOf("?");
+    if (index !== -1) {
+      id = pageId.substring(0, index) + "_" + new Date().getTime() + pageId.substring(index);
+    } else {
+      id = pageId + "_" + new Date().getTime();
+    }
+    return id;
+  }
+
+  /**
+   * 通过hash值获取pageId
+   * 例子: "#info_1541214530597?id=1"
+   * @return {string}
+   */
+  getPageIdByHash() {
+    let hash = window.location.hash;
+    if (!hash) return "";
+
+    if (hash.indexOf("?") !== -1) {
+      hash = hash.substring(0, hash.lastIndexOf("?"));
+      return hash.substring(1, hash.lastIndexOf("_"));
+    } else {
+      return hash.substring(1, hash.lastIndexOf("_"));
+    }
+  }
+
+  /**
+   * 通过hash获取参数Parameter
+   * @return {string}
+   */
+  getParameterByHash() {
+    let hash = window.location.hash;
+    if (!hash) return "";
+
+    if (hash.indexOf("?") !== -1) {
+      return hash.substring(hash.lastIndexOf("?"));
+    } else {
+      return "";
+    }
+  }
+
+  /**
+   * 获取第一个页面的pageId
+   * @return {string}
+   */
+  getFirstPageId() {
+    let id;
+    for (let p in this.config.router) {
+      if (this.config.router[p].isFirst) {
+        id = p;
+        break;
+      }
+    }
+    return id ? id : 'index';
+  }
+
+  /**
+   * 根据ID获取page对象
+   * @param {string} id
+   * @return {Page}
+   */
+  getPageById(id) {
+    return this.router.getPageById(this.indexOfById(id));
+  }
+
+  /**
+   * 根据pageId获取单例对象
+   * @param {string} pageId
+   * @return {Page}
+   */
+  getSingleInstance(pageId) {
+    if (!this.singleInstances) {
+      this.singleInstances = {};
+    }
+    return this.singleInstances[pageId];
+  }
+
+  /**
+   * 触发一个自定义事件
+   * @param {HtmlElement} dom
+   * @param {string} type
+   * @param {Object} params
+   */
+  fireEvent(dom, type, params) {
+    fireEvent(dom, type, params);
+  }
+
+  /**
+   * 根据索引获取page对象
+   * @param {string} index
+   * @returns {Page}
+   */
+  getPageByIndex(index) {
+    return this.router.getPageByIndex(index);
+  }
+
+  /**
+   * 根据id获取索引
+   * @param {string} id
+   * @returns {number}
+   */
+  indexOfById(id) {
+    let index = -1;
+    for (let i = 0, len = this.getHistoryLength(); i &lt; len; i++) {
+      if (this.getPageByIndex(i).getId() === id) {
+        index = i;
+        break;
+      }
+    }
+    return index;
+  }
+
+  /**
+   * 获取历史记录中的栈第一个元素
+   * @return {Page}
+   */
+  getFirstPage() {
+    return this.router.getPageByIndex(0);
+  }
+
+  /**
+   * 获取历史记录中的栈顶的元素
+   * @returns {Page}
+   */
+  getLastPage() {
+    return this.router.getLastPage();
+  }
+
+  /**
+   * 获取转场的参数
+   * @return {Object}
+   */
+  getParameter() {
+    return this.router.getParameter();//$.extend({}, _parameter);
+  }
+
+  /**
+   * 获取历史栈长度
+   * @return {number}
+   */
+  getHistoryLength() {
+    return this.router.getHistoryLength();
+  }
+
+  /**
+   * 获取父窗体的setRequest的值
+   * @param {Page} page
+   * @return {Object}
+   */
+  getRequest(page) {
+    if (this.getHistoryLength() === 0 || this.getHistoryLength() === 1) {
+      return {};
+    } else {
+      const index = this.indexOfById(page.getId());
+      if (index &lt;= 0 || index > this.getHistoryLength() - 1) {
+        return {};
+      } else {
+        return this.getPageByIndex(this.getHistoryLength() - 2).requestIntent || {};
+      }
+    }
+  }
+
+  /**
+   * 注册Receiver对象
+   * @params {Object} intentFilter -
+   * {
+   *    el: HtmlElement
+	 *    action:[string] action
+	 *    priority:[number] 优先级
+	 *    categorys:[array] 分类
+	 * }
+   * @params {Function} handler - receiver执行的handler
+   * @params {Object} context - 调用handler的上下文
+   */
+  registerReceiver(intentFilter, handler, context) {
+    this.borasdcast.registerReceiver(intentFilter, handler, context);
+  }
+
+  /**
+   * 执行Receiver通过Id
+   * @param {string} id
+   * @param {string} jsonStr
+   */
+  executeReceiverById(id, jsonStr) {
+    this.borasdcast.executeReceiverById(id, jsonStr);
+  }
+
+  /**
+   * 解除注册Receiver对象
+   * @params {Function} handler
+   */
+  unregisterReceiver(action, handler) {
+    this.borasdcast.unregisterReceiver(action, handler);
+  }
+
+  /**
+   * 解除注册通过Page中的Dom
+   * @param {HtmlElement} el
+   */
+  unregisterReceiverByDom(el) {
+    this.borasdcast.unregisterReceiverByDom(el);
+  }
+
+  /**
+   * 发送无序广播
+   * @param {Object} intent -
+   * {
+	 *    action:[string] action
+	 *    categorys:[array] 分类
+	 *    bundle:Object 参数
+	 * }
+   */
+  sendBroadcast(intent) {
+    this.borasdcast.sendBroadcast(intent);
+  }
+
+  /**
+   * 发送有序广播
+   * @param {Object} intent -
+   * {
+	 *    action:[string] action
+	 *    categorys:[array] 分类
+	 *    bundle:Object 参数
+	 * }
+   */
+  sendOrderedBroadcast(intent) {
+    this.borasdcast.sendOrderedBroadcast(intent);
+  }
+
+}
+
+
+/**
+ * CtMobileFactory
+ * @class
+ */
+const CtMobileFactory = {
+  /**
+   * 将转场参数转换为对象
+   * @param {string} url
+   * @return {Object}
+   */
+  getUrlParam(url) {
+    const reg_url = /^[^\?]+\?([\w\W]+)$/,
+      reg_para = /([^&amp;=]+)=([\w\W]*?)(&amp;|$)/g,
+      arr_url = reg_url.exec(url),
+      ret = {};
+    if (arr_url &amp;&amp; arr_url[1]) {
+      const str_para = arr_url[1];
+      let result;
+      while ((result = reg_para.exec(str_para)) != null) {
+        ret[result[1]] = decodeURI(result[2]);
+      }
+    }
+    return ret;
+  },
+  /**
+   * 创建CtMobile
+   * @param {object} config
+   * @return {CtMobile}
+   */
+  create(config) {
+    return new CtMobile(config);
+  }
+};
+
+export default CtMobileFactory;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Back.html">Back</a></li><li><a href="BorasdCast.html">BorasdCast</a></li><li><a href="CtMobile.html">CtMobile</a></li><li><a href="CtMobileFactory.html">CtMobileFactory</a></li><li><a href="Link.html">Link</a></li><li><a href="global.html#Page">Page</a></li><li><a href="PageComponent.html">PageComponent</a></li><li><a href="Router.html">Router</a></li><li><a href="WrappedPage.html">WrappedPage</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-config.html">配置</a></li><li><a href="tutorial-introduction.html">自述</a></li><li><a href="tutorial-tutorial.html">指南</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Context">Context</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Nov 23 2018 14:34:09 GMT+0800 (中国标准时间)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
