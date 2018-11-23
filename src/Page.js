@@ -479,10 +479,10 @@ const Page = {
          * constructor
          * @constructor
          * @param props {Object} - {
-         *    ctmobile:CtMobile,
-         *    id:String,
-         *    config:Object,
-         *    callback:Function
+         *    ctmobile: {Object} - CtMobile,
+         *    id: {String} - id,
+         *    config: {Object} Page的一系列配置,
+         *    callback: {Function} componentDidMount的处理
          * }
          * @return {PageComponent}
          */
@@ -988,6 +988,7 @@ const Page = {
           };
 
           return (
+            // 向用户自定义类注入CtMobile全局对象
             <Provider value={this.getCtMobile()}>
               <WrappedComponent {...mergeProps} {...this.props} />
             </Provider>
@@ -997,6 +998,15 @@ const Page = {
 
       /**
        * CheckWrappedComponentProps
+       * 用户自定义的类
+       * @param {Object} ctmobile - CtMobile实例
+         @param {string} id - id
+         @param {Object} config - Rouet中的配置
+         @param {Function} callback - componentDidMount的处理
+         @param {Object} parent - self
+         @param {HtmlElement} _pDom - Page对应的Dom
+         @param {string} pageId - pageId
+         @param {Function} getInstance - 获取用户定义的子类实例
        */
       WrappedComponent.propTypes = {
         ctmobile: PropTypes.object,
@@ -1011,7 +1021,11 @@ const Page = {
 
       /**
        * CheckPageComponentProps
-       * @type {{name: *}}
+       * WrappedComponent的高阶类
+       * @param {Object} ctmobile - CtMobile实例
+       * @param {string} id - id
+       * @param {Object} config - Router的配置
+       * @param {Function} callback - componentDidMount的处理
        */
       PageComponent.propTypes = {
         ctmobile: PropTypes.object,

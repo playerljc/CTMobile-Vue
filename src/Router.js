@@ -198,6 +198,11 @@ class Link extends React.Component {
 
 /**
  * CheckLinkComponentProps
+ * @param {string} className - className
+ * @param {Object} style - style
+ * @param {string} pageId - pageId
+ * @param {string} parameter - 页面参数
+ * @param {boolean} reload - 是否替换历史
  */
 Link.propTypes = {
   className: PropTypes.string,
@@ -235,6 +240,8 @@ class Back extends React.Component {
 
 /**
  * CheckBackComponentProps
+ * @param {string} className - className
+ * @param {Object} style - style
  */
 Back.propTypes = {
   className: PropTypes.string,
