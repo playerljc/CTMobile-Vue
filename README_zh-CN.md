@@ -141,7 +141,7 @@ componentDidMount() {
     super.componentDidMount(...arguments);
 }
 ```
-&ensp;&ensp;其中pageCreate，pageShow和pageBeforeDestory是Page的生命周期函数，更多生命周期函数请参考[Page的生命周期](#9-Page的生命周期)
+&ensp;&ensp;其中pageCreate，pageShow和pageBeforeDestory是Page的生命周期函数，更多生命周期函数请参考[Page的生命周期](#8-page的生命周期)
 
 **4. 跳转到一个新页面**
 -----------
@@ -309,7 +309,7 @@ export default class extends CtMobile.Page.WrappedPage {
  * result
   &ensp;&ensp;带有返回值的(可以向父页面带回返回值)
 
-  &ensp;&ensp;[参见带有返回值的页面](#7-带有返回值的页面)
+  &ensp;&ensp;[参见带有返回值的页面](#6-带有返回值的页面)
 
  * singleInstanceResult
   &ensp;&ensp;带有返回值的完全单例(不会被销毁，可以向父页面带回返回值)
@@ -479,7 +479,7 @@ const Router = {
  * 是否增加历史
  如果不想让新跳转的页面增加到历史栈中，可以设置reload属性为true来阻止浏览器增加历史。
  ```js
-    <Link pageId="a" reload="true">info A</Link>
+<Link pageId="a" reload="true">info A</Link>
  ```
  ```js
  this.props.ctmobile.startPage('#a?pageId=a',{
@@ -509,7 +509,11 @@ const Router = {
 * Router中config的配置
 | 属性(property)                 | 取值                 | 说明                                                     |
 | ------------------------------ | -------------------- | -------------------------------------------------------- |
-| transition                     | slideleft            | 从右到左(overlay)                                        |
+| ct-data-role                   | page                 | 有此属性的元素代表一个页面                               |
+| ct-data-rel                    | boolean        | true的时候带有此属性的元素点击可以执行返回操作           |
+| ct-pageId                      | string               | 用在<a>标签上代表要加载页面的id                          |
+| ct-parameter                   | string               | 用在<a>标签上代表要传递的参数                            |
+| ct-data-transition             | slideleft            | 从右到左(overlay)                                        |
 |                                | slideright           | 从左到右(overlay)                                        |
 |                                | slideup              | 从下到上(overlay)                                        |
 |                                | slidedown            | 从上到下(overlay)                                        |
@@ -522,14 +526,17 @@ const Router = {
 |                                | pushslideup          | 从下到上(push)                                           |
 |                                | pushslidedown        | 从上到下(push)                                           |
 |                                | material(缺省)       | Android Material的风格                                   |
-| mode                           | standard(缺省)       | 多例                                                     |
+| ct-data-mode                   | standard(缺省)       | 多例                                                     |
 |                                | single               | 单例(当点击返回时，会销毁)                               |
 |                                | singleInstance       | 完全单例(不会被销毁)                                     |
 |                                | result               | 带有返回值的(可以向父页面带回返回值)                     |
 |                                | singleInstanceResult | 带有返回值的完全单例(不会被销毁，可以向父页面带回返回值) |
-| intentfilterAction             | string               | 如果页面要订阅通知时的标识                               |
-| intentfilterCategorys          | [string1 string2 …]  | 订阅时的过滤参数                                         |
-| intentfilterPriority           | number 0(缺省)       | 发送有序广播时的优先级，默认值是0                        |
+| ct-data-ajax                   | boolean        | 是否交由框架处理a标签的跳转                              |
+| ct-data-preload                | boolean        | 是否提前预加载a标签的href属性的页面                      |
+| ct-reload                      | boolean        | 是否改变window.history.length的数量                      |
+| ct-data-intentfilter-action    | string               | 如果页面要订阅通知时的标识                               |
+| ct-data-intentfilter-categorys | [string1 string2 …]  | 订阅时的过滤参数                                         |
+| ct-data-intentfilter-priority  | number 0(缺省)       | 发送有序广播时的优先级，默认值是0                        |
 
 ## CtMobile应用程序展示
 
