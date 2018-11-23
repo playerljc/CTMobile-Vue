@@ -70,7 +70,7 @@ const App = CtMobile.CtMobileFactory.create({
     router: Router,
 });
 ```
-&ensp;Detailed parameter explanation please refer to[Attribute configuration](#Attribute configuration)。
+&ensp;Detailed parameter explanation please refer to[Attribute configuration](#attribute-configuration)。
 
 **2. Router**
 -----
@@ -143,7 +143,7 @@ componentDidMount() {
     super.componentDidMount(...arguments);
 }
 ```
-&ensp;&ensp;Among them pageCreate, pageShow and pageBeforeDestory are the life cycle functions of Page, more life cycle functions please refer to[Page life cycle](#8-Page life cycle)
+&ensp;&ensp;Among them pageCreate, pageShow and pageBeforeDestory are the life cycle functions of Page, more life cycle functions please refer to[Page life cycle](#8-page-life-cycle)
 
 **4. Jump to a new page**
 -----------
@@ -311,7 +311,7 @@ Set the mode attribute value in the config of the Router. The framework supports
  * result
   &ensp;&ensp;With a return value (you can bring back the return value to the parent page)
 
-  &ensp;&ensp;[Page with return value](#6-Page with return value)
+  &ensp;&ensp;[Page with return value](#6-page-with-return-value)
 
  * singleInstanceResult
   &ensp;&ensp;A complete singleton with a return value (will not be destroyed, can bring back the return value to the parent page)
