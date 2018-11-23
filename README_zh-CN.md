@@ -1,3 +1,5 @@
+[english](https://github.com/playerljc/CTMobile-React "english") | 简体中文
+
 ## CtMobile-React
 &ensp;&ensp;一个移动端框架，支持页面的多种形式切换，页面转场，页面传值，通知等，适用于开发单页面应用(SPA)，混合开发(Hybrid)，Cordova开发，CtMobile-React是在["CtMobile"](https://github.com/playerljc/CTMobile "点击了解CtMobile")的基础之上，加上了对[React](https://reactjs.org/ "点击了解React")的支持。
 ## 开发灵感
