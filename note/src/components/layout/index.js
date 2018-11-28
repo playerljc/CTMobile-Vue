@@ -1,9 +1,13 @@
-import AppLayout from './layout';
-import AppHeader from './header';
-import AppContent from './content';
-import AppFooter from './footer';
-import AppBack from './back';
+import Layout from './layout.vue';
+import Header from './header.vue';
+import Content from './content.vue';
+import Footer from './footer.vue';
 
-import './index.less';
-
-export {AppLayout, AppHeader, AppContent, AppFooter, AppBack};
+export default {
+  components: {
+    Layout,
+    Header,
+    Content,
+    Footer
+  }
+}

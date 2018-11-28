@@ -5,11 +5,8 @@
 
 import CtMobileFactory from "./CtMobile";
 import Page from "./Page";
-import {Link, Back} from "./Router";
 
 export default {
   CtMobileFactory,
-  Page,
-  Link,
-  Back,
+  Page
 };

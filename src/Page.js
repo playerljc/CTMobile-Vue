@@ -2,13 +2,8 @@
  * Created by lzq on 2018/11/02
  * Page.js
  */
-
-import React from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
 import $ from "jquery";
 import Constant from "./Constant";
-import {Provider} from "./GlobalContext";
 
 /**
  * 对数组进行遍历
@@ -195,10 +190,7 @@ function pageFinishTransitioneEndCallback(e) {
    */
   const ctDataMode = self.ctmobile.getPageConfigAttribute(self.pageId, 'mode');
   if (ctDataMode.toLowerCase().indexOf("singleinstance") === -1) {
-    const unmountFlag = ReactDOM.unmountComponentAtNode(self.getPageDOM());
-    if (unmountFlag) {
-      self.getPageDOM().parentNode.removeChild(self.getPageDOM());
-    }
+    self.$destroy();
   }
 
   if (self.ctmobile.getHistoryLength() > 1) {
@@ -461,80 +453,12 @@ function slide(x, y, duration, beforeCallback) {
  * Page类
  * @type {{create: (function())}}
  */
-const Page = {
-  /**
-   * 高阶方法
-   * @param el {HtmlElement} - Page的顶层html定义
-   * @return {function(*)}
-   */
-  create: (el) => {
-    return (WrappedComponent) => {
-      /**
-       * PageComponent
-       * @class Page
-       * @classdesc 管理所有和页面相关的操作
-       */
-      class PageComponent extends React.Component {
-        /**
-         * constructor
-         * @constructor
-         * @param props {Object} - {
-         *    ctmobile: {Object} - CtMobile,
-         *    id: {String} - id,
-         *    config: {Object} Page的一系列配置,
-         *    callback: {Function} componentDidMount的处理
-         * }
-         * @return {PageComponent}
-         */
-        constructor(props) {
-          super(props);
+export default class page {
+  constructor(props) {
+    const {ctmobile, id, config = {}, el, callback} = props;
 
-          const {ctmobile, id, config = {}} = props;
-
-          Object.assign(this, {
-            ctmobile,
-            config,
-            _pDom: el,
-            id,
-            pageId: id.substring(0, id.lastIndexOf("_")),
-            /*** 默认的页面过渡类型 */
-            transition: "material",
-            /*** 页面切换时的锁 */
-            changeKey: false,
-            /*** Page的transition类型[start|finish] */
-            pageTransitionType: null,
-            /*** Page的transitionEnd后的回调函数 */
-            pageTransitionEndCallback: null,
-          });
-
-          createPageDOM.call(this);
-          layout.call(this);
-        }
-
-        /**
-         * componentDidMount
-         */
-        componentDidMount() {
-          if (this.ins && this.ins.pageCreate) {
-            this.ins.pageCreate();
-          }
-
-          const pageId = this.getPageId();
-          const ctDataMode = this.ctmobile.getPageConfigAttribute(pageId, 'mode');
-
-          /***
-           * 如果是singleInstance 或 singleInstanceResult
-           */
-          if (ctDataMode.toLowerCase().indexOf("singleinstance") !== -1) {
-            if (!this.ctmobile.getSingleInstance(pageId)) {
-              this.ctmobile.singleInstances[pageId] = this;
-            }
-          }
-
-          if (this.props.callback) {
-            this.props.callback(this);
-          }
-        }
+    Object.assign(this, {
+      methods: {
 
         /**------------------- 生命周期函数 start-----------------**/
 
@@ -545,10 +469,10 @@ const Page = {
          * @param {Object} e
          */
         pageBeforeShow(e) {
-          if (this.ins && this.ins.pageBeforeShow) {
-            this.ins.pageBeforeShow(e);
+          if (this.$children && this.$children.length === 1 && this.$children[0].pageBeforeShow) {
+            this.$children[0].pageBeforeShow(e);
           }
-        }
+        },
 
         /***
          * 页面显示
@@ -557,10 +481,10 @@ const Page = {
          * @param {Object} e
          */
         pageShow(e) {
-          if (this.ins && this.ins.pageShow) {
-            this.ins.pageShow(e);
+          if (this.$children && this.$children.length === 1 && this.$children[0].pageShow) {
+            this.$children[0].pageShow(e);
           }
-        }
+        },
 
         /***
          *  页面显示之后
@@ -569,10 +493,10 @@ const Page = {
          * @param {Object} e
          */
         pageAfterShow(e) {
-          if (this.ins && this.ins.pageAfterShow) {
-            this.ins.pageAfterShow(e);
+          if (this.$children && this.$children.length === 1 && this.$children[0].pageAfterShow) {
+            this.$children[0].pageAfterShow(e);
           }
-        }
+        },
 
         /***
          * 页面暂停之前
@@ -581,10 +505,10 @@ const Page = {
          * @param {Object} e
          */
         pageBeforePause(e) {
-          if (this.ins && this.ins.pageBeforePause) {
-            this.ins.pageBeforePause(e);
+          if (this.$children && this.$children.length === 1 && this.$children[0].pageBeforePause) {
+            this.$children[0].pageBeforePause(e);
           }
-        }
+        },
 
         /***
          * 页面暂停之后
@@ -593,10 +517,10 @@ const Page = {
          * @param {Object} e
          */
         pageAfterPause(e) {
-          if (this.ins && this.ins.pageAfterPause) {
-            this.ins.pageAfterPause(e);
+          if (this.$children && this.$children.length === 1 && this.$children[0].pageAfterPause) {
+            this.$children[0].pageAfterPause(e);
           }
-        }
+        },
 
         /***
          * 页面恢复之前
@@ -605,10 +529,10 @@ const Page = {
          * @param {Object} e
          */
         pageBeforeRestore(e) {
-          if (this.ins && this.ins.pageBeforeRestore) {
-            this.ins.pageBeforeRestore(e);
+          if (this.$children && this.$children.length === 1 && this.$children[0].pageBeforeRestore) {
+            this.$children[0].pageBeforeRestore(e);
           }
-        }
+        },
 
         /***
          * 页面恢复
@@ -617,10 +541,10 @@ const Page = {
          * @param {Object} e
          */
         pageRestore(e) {
-          if (this.ins && this.ins.pageRestore) {
-            this.ins.pageRestore(e);
+          if (this.$children && this.$children.length === 1 && this.$children[0].pageRestore) {
+            this.$children[0].pageRestore(e);
           }
-        }
+        },
 
         /***
          * 页面恢复之后
@@ -629,10 +553,10 @@ const Page = {
          * @param {Object} e
          */
         pageAfterRestore(e) {
-          if (this.ins && this.ins.pageAfterRestore) {
-            this.ins.pageAfterRestore(e);
+          if (this.$children && this.$children.length === 1 && this.$children[0].pageAfterRestore) {
+            this.$children[0].pageAfterRestore(e);
           }
-        }
+        },
 
         /***
          * 页面DOM销毁之前
@@ -641,10 +565,10 @@ const Page = {
          * @param {Object} e
          */
         pageBeforeDestroy(e) {
-          if (this.ins && this.ins.pageBeforeDestroy) {
-            this.ins.pageBeforeDestroy(e);
+          if (this.$children && this.$children.length === 1 && this.$children[0].pageBeforeDestroy) {
+            this.$children[0].pageBeforeDestroy(e);
           }
-        }
+        },
 
         /***
          * pageResult
@@ -655,10 +579,10 @@ const Page = {
          * @param {Object} bundle - 返回的参数
          */
         pageResult(e, resultCode, bundle) {
-          if (this.ins && this.ins.pageResult) {
-            this.ins.pageResult(e, resultCode, bundle);
+          if (this.$children && this.$children.length === 1 && this.$children[0].pageResult) {
+            this.$children[0].pageResult(e, resultCode, bundle);
           }
-        }
+        },
 
         /***
          * 如果添加了ct-data-intentfilter-action属性，满足条件后触发
@@ -668,13 +592,14 @@ const Page = {
          * @param {Object} functions
          */
         pageReceiver(bundle, functions) {
-          if (this.ins && this.ins.pageReceiver) {
-            this.ins.pageReceiver(bundle, functions);
+          if (this.$children && this.$children.length === 1 && this.$children[0].pageReceiver) {
+            this.$children[0].pageReceiver(bundle, functions);
           }
-        }
-
+        },
 
         /**------------------- 生命周期函数 end-----------------**/
+
+
 
         /**
          * 显示
@@ -749,7 +674,7 @@ const Page = {
               callback();
             }
           }
-        }
+        },
 
         /**
          * 销毁
@@ -843,10 +768,7 @@ const Page = {
              * 删除DOM
              */
             if (ctDataMode.toLowerCase().indexOf("singleinstance") === -1) {
-              const unmountFlag = ReactDOM.unmountComponentAtNode(self.getPageDOM());
-              if (unmountFlag) {
-                self.getPageDOM().parentNode.removeChild(self.getPageDOM());
-              }
+              self.$destroy();
             }
 
             // (多于一个元素)且(改变浏览器历史)
@@ -876,7 +798,7 @@ const Page = {
               callback();
             }
           }
-        }
+        },
 
         /**
          * 获取page的DOM对象
@@ -884,7 +806,7 @@ const Page = {
          */
         getPageDOM() {
           return this._pDom;
-        }
+        },
 
         /**
          * 获取当前页面的jQuery对象
@@ -895,7 +817,7 @@ const Page = {
             this._pJO = $(this.getPageDOM());
           }
           return this._pJO;
-        }
+        },
 
         /**
          * 获取page的实际id
@@ -903,7 +825,7 @@ const Page = {
          */
         getId() {
           return this.id;
-        }
+        },
 
         /**
          * 获取克隆的pageId
@@ -911,7 +833,7 @@ const Page = {
          */
         getPageId() {
           return this.pageId;
-        }
+        },
 
         /**
          * 设置请求参数
@@ -924,7 +846,7 @@ const Page = {
             requestCode: requestCode,
             bundle: bundle
           };
-        }
+        },
 
         /**
          * 获取父页面的请求参数
@@ -937,7 +859,7 @@ const Page = {
          */
         getRequest(callback) {
           return this.ctmobile.getRequest(this);
-        }
+        },
 
         /**
          * 设置返回值
@@ -950,7 +872,7 @@ const Page = {
             resultCode: resultCode,
             bundle: bundle,
           };
-        }
+        },
 
         /**
          * 获取resultIntent
@@ -959,7 +881,7 @@ const Page = {
          */
         getResult(callback) {
           return this.resultIntent;
-        }
+        },
 
         /**
          * 当前页面ct-data-mode设置为result或singleInstanceResult时,向父页面返回参数时调用over
@@ -967,7 +889,7 @@ const Page = {
          */
         over() {
           go.call(this, -1);
-        }
+        },
 
         /**
          * 获取CtMobile实例
@@ -975,83 +897,54 @@ const Page = {
          */
         getCtMobile() {
           return this.ctmobile;
+        },
+      },
+      created() {
+
+        Object.assign(this, {
+          ctmobile,
+          config,
+          _pDom: el,
+          id,
+          callback,
+          pageId: id.substring(0, id.lastIndexOf("_")),
+          /*** 默认的页面过渡类型 */
+          transition: "material",
+          /*** 页面切换时的锁 */
+          changeKey: false,
+          /*** Page的transition类型[start|finish] */
+          pageTransitionType: null,
+          /*** Page的transitionEnd后的回调函数 */
+          pageTransitionEndCallback: null,
+        });
+
+        createPageDOM.call(this);
+        layout.call(this);
+      },
+      mounted() {
+        if (this.$children && this.$children.length == 1 && this.$children[0].pageCreate) {
+          this.$children[0].pageCreate();
         }
 
-        render() {
-          const mergeProps = {
-            parent:this,
-            _pDom: this._pDom,
-            pageId: this.pageId,
-            getInstance: (ins) => {
-              this.ins = ins;
-            },
-          };
+        const pageId = this.getPageId();
+        const ctDataMode = this.ctmobile.getPageConfigAttribute(pageId, 'mode');
 
-          return (
-            // 向用户自定义类注入CtMobile全局对象
-            <Provider value={this.getCtMobile()}>
-              <WrappedComponent {...mergeProps} {...this.props} />
-            </Provider>
-          );
+        /***
+         * 如果是singleInstance 或 singleInstanceResult
+         */
+        if (ctDataMode.toLowerCase().indexOf("singleinstance") !== -1) {
+          if (!this.ctmobile.getSingleInstance(pageId)) {
+            this.ctmobile.singleInstances[pageId] = this;
+          }
         }
+
+        if (this.callback) {
+          this.callback(this);
+        }
+      },
+      destroyed() {
+        this.getPageDOM().parentNode.removeChild(this.getPageDOM());
       }
-
-      /**
-       * CheckWrappedComponentProps
-       * 用户自定义的类
-       * @param {Object} ctmobile - CtMobile实例
-         @param {string} id - id
-         @param {Object} config - Rouet中的配置
-         @param {Function} callback - componentDidMount的处理
-         @param {Object} parent - self
-         @param {HtmlElement} _pDom - Page对应的Dom
-         @param {string} pageId - pageId
-         @param {Function} getInstance - 获取用户定义的子类实例
-       */
-      WrappedComponent.propTypes = {
-        ctmobile: PropTypes.object,
-        id: PropTypes.string,
-        config: PropTypes.object,
-        callback: PropTypes.func,
-        parent:PropTypes.object,
-        _pDom:PropTypes.object,
-        pageId: PropTypes.string,
-        getInstance: PropTypes.func,
-      };
-
-      /**
-       * CheckPageComponentProps
-       * WrappedComponent的高阶类
-       * @param {Object} ctmobile - CtMobile实例
-       * @param {string} id - id
-       * @param {Object} config - Router的配置
-       * @param {Function} callback - componentDidMount的处理
-       */
-      PageComponent.propTypes = {
-        ctmobile: PropTypes.object,
-        id: PropTypes.string,
-        config: PropTypes.object,
-        callback: PropTypes.func
-      };
-
-      return PageComponent;
-    }
-  },
-  /**
-   * @class WrappedPage
-   * @classdesc Page的基类用来获取本身的instance
-   */
-  WrappedPage: class extends React.Component {
-    constructor(props) {
-      super(props);
-    }
-
-    componentDidMount() {
-      if (this.props.getInstance) {
-        this.props.getInstance(this);
-      }
-    }
+    });
   }
 };
-
-export default Page;

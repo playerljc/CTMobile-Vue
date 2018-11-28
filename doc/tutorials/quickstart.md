@@ -4,7 +4,7 @@
 --------
 
 ```js
-import CtMobile from "ctmobile-react";
+import CtMobile from '@ctmobile/react';
 const Router = {
     index: {
       component: import(/* webpackChunkName: "index" */ "../pages/index"),
@@ -48,7 +48,7 @@ const App = CtMobile.CtMobileFactory.create({
 
 ```js
 import React from 'react';
-import CtMobile from "ctmobile-react";
+import CtMobile from '@ctmobile/react';
 
 export default class extends CtMobile.Page.WrappedPage {
     constructor(props) {
@@ -103,7 +103,7 @@ componentDidMount() {
 * Label method
 ```js
 import React from 'react';
-import CtMobile from "ctmobile-react";
+import CtMobile from '@ctmobile/react';
 const {Link, Back} = CtMobile;
 
 <Link pageId="info">Jump to the info page</Link>
@@ -169,7 +169,7 @@ const Router = {
 &ensp;&ensp;Index.js definition
 ```js
 import React from 'react';
-import CtMobile from 'ctmobile-react';
+import CtMobile from '@ctmobile/react';
 
 const {Link} = CtMobile;
 
@@ -206,7 +206,7 @@ export default class extends CtMobile.Page.WrappedPage {
 &ensp;&ensp;Definition of PopUpDialog.js
 ```js
 import React from 'react';
-import CtMobile from 'ctmobile-react';
+import CtMobile from '@ctmobile/react';
 
 export default class extends CtMobile.Page.WrappedPage {
   constructor(props){
@@ -303,7 +303,7 @@ Set the transition attribute value in the config of the Router. The framework su
    Page rewriting pageReceiver method
    ```js
    import React from 'react';
-   import CtMobile from 'ctmobile-react';
+   import CtMobile from '@ctmobile/react';
    export default class extends CtMobile.Page.WrappedPage {
       constructor(props){
         super(props);
@@ -333,7 +333,7 @@ Set the transition attribute value in the config of the Router. The framework su
  * Register via api
    ```js
    import React from 'react';
-   import CtMobile from 'ctmobile-react';
+   import CtMobile from '@ctmobile/react';
    export default class extends CtMobile.Page.WrappedPage {
      constructor(props){
        super(props);
@@ -445,7 +445,7 @@ const Router = {
  * Use Back to return the page
  ```js
  import React from 'react';
- import CtMobile from 'ctmobile-react';
+ import CtMobile from '@ctmobile/react';
  const {Back} = CtMobile;
 
  export default class extends CtMobile.Page.WrappedPage {

@@ -1,5 +1,5 @@
 import React from 'react';
-import CtMobile from "ctmobile-react";
+import CtMobile from "@ctmobile/react";
 import AppBar from '../../components/appbar';
 import SearchBar from '../../components/searchbar';
 import FloatingButton from '../../components/flbtn';

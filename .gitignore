@@ -37,7 +37,7 @@ npm-debug
 
 .vscode
 
-demo/src/ctmobile-react
+demo/src/ctmobile-vue
 demo/src/assets/dll
-note/src/ctmobile-react
+note/src/ctmobile-vue
 note/src/assets/dll

@@ -4,11 +4,8 @@
  */
 
 import $ from "jquery";
-import React from 'react';
-import PropTypes from 'prop-types';
 import CtMobileFactory from "./CtMobile";
 import Constant from "./Constant";
-import {Consumer} from "./GlobalContext";
 
 /**
  * 初始化
@@ -172,44 +169,30 @@ function indexOfHistoryByPageId(pageId) {
  * @class Link
  * @classdesc 用来管理跳转的链接
  */
-class Link extends React.Component {
-  render() {
-    const {className = '', style = {}} = this.props;
-    return (
-      <Consumer>
-        {(ctmobile) => {
-          return (
-            <a
-              className={className}
-              style={style}
-              onClick={() => {
-                const {pageId = '', parameter = '', reload = ctmobile.config.linkCaptureReload} = this.props;
-                const href = `${"#" + pageId}?pageId=${pageId}${parameter}`;
-                ctmobile.router.startPage(href, {
-                  reload,
-                });
-              }}>{this.props.children}</a>
-          );
-        }}
-      </Consumer>
-    );
-  }
-}
-
-/**
- * CheckLinkComponentProps
- * @param {string} className - className
- * @param {Object} style - style
- * @param {string} pageId - pageId
- * @param {string} parameter - 页面参数
- * @param {boolean} reload - 是否替换历史
- */
-Link.propTypes = {
-  className: PropTypes.string,
-  style: PropTypes.object,
-  pageId: PropTypes.string,
-  parameter: PropTypes.string,
-  reload: PropTypes.bool
+const Link = {
+  props: {
+    pageId: {
+      type: String,
+      require: true
+    },
+    parameter: {
+      type: String,
+      default: '',
+    },
+    reload: {
+      type: Boolean,
+      default: false,
+    }
+  },
+  methods: {
+    onClick() {
+      const href = `${"#" + this.pageId}?pageId=${this.pageId}${this.parameter}`;
+      this.$ctmobile.router.startPage(href, {
+        reload: this.reload,
+      });
+    }
+  },
+  template: '<a v-on:click="onClick"><slot></slot></a>'
 };
 
 /**
@@ -217,38 +200,17 @@ Link.propTypes = {
  * @class Back
  * @classdesc 用来管理返回的操作
  */
-class Back extends React.Component {
-  render() {
-    const {className = '', style = {}} = this.props;
-    return (
-      <Consumer>
-        {(ctmobile) => {
-          return (
-            <a
-              className={className}
-              style={style}
-              onClick={() => {
-                ctmobile.router.go(-1);
-              }}>{this.props.children}</a>
-          );
-        }}
-
-      </Consumer>
-    );
-  }
-}
-
-/**
- * CheckBackComponentProps
- * @param {string} className - className
- * @param {Object} style - style
- */
-Back.propTypes = {
-  className: PropTypes.string,
-  style: PropTypes.object,
+const Back = {
+  methods: {
+    onClick() {
+      this.$ctmobile.router.go(-1);
+    }
+  },
+  template: '<a v-on:click="onClick"><slot></slot></a>'
 };
 
 export {Link, Back};
+
 
 /**
  *  Router
@@ -397,7 +359,7 @@ class Router {
    */
   getParameter() {
     let parameter = Object.assign({}, this.parameter);
-    if(parameter.pageId) {
+    if (parameter.pageId) {
       delete parameter.pageId;
     }
     return parameter;
