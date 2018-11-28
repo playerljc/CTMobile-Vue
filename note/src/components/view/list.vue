@@ -2,8 +2,8 @@
   <div class="AppListView">
     <ul>
       <li v-for="item in data" :key="item.id" @click="
-        page.$parent.setRequest('update', item);
-        page.$parent.ctmobile.startPage(`#saveorupdate?pageId=saveorupdate&id=${item.id}`);
+        getPage().$parent.setRequest('update', item);
+        getPage().$parent.ctmobile.startPage(`#saveorupdate?pageId=saveorupdate&id=${item.id}`);
       ">
         <div class="title">{{item.title}}</div>
         <div class="info">{{item.info}}</div>

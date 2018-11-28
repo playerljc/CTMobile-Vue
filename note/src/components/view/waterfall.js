@@ -3,24 +3,21 @@ export default {
     data: {
       type: Array,
       require: true
-    },
-    page: {
-      type: Object,
-      require: true
     }
   },
+  inject: ['getPage'],
   methods: {
-    computeData: (index) => {
+    computeData: function(index){
       let result = [];
       for (let i = index; i < this.data.length; i = i + 2) {
-        result.push(this.data[index]);
+        result.push(this.data[i]);
       }
 
       return result;
     },
-    onItemClick: (item) => {
-      this.page.$parent.setRequest('update', item);
-      this.page.$parent.ctmobile.startPage(`#saveorupdate?pageId=saveorupdate&id=${item.id}`);
+    onItemClick: function(item) {
+      this.getPage().$parent.setRequest('update', item);
+      this.getPage().$parent.ctmobile.startPage(`#saveorupdate?pageId=saveorupdate&id=${item.id}`);
     }
   }
 }

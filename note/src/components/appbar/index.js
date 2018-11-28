@@ -14,12 +14,12 @@ export default {
     }
   },
   computed: {
-    classObject: () => {
+    classObject: function () {
       return {
         'fa': true,
-        'AppBar-viewTyppe': true,
         'fa-list': this.type === 'waterfall',
-        'fa-th-large': this.type !== 'waterfall'
+        'fa-th-large': this.type !== 'waterfall',
+        'AppBar-viewTyppe': true
       }
     }
   }

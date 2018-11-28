@@ -5,8 +5,6 @@ export default {
       require: true
     }
   },
-  page: {
-    type: Object,
-    require: true
-  }
+  inject: ['getPage']
+
 }
