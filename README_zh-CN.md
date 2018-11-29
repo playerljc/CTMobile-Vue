@@ -1,7 +1,7 @@
-[english](https://github.com/playerljc/CTMobile-React "english") | 简体中文
+[english](https://github.com/playerljc/CTMobile-Vue "english") | 简体中文
 
 ## CtMobile-Vue
-&ensp;&ensp;一个移动端框架，支持页面的多种形式切换，页面转场，页面传值，通知等，适用于开发单页面应用(SPA)，混合开发(Hybrid)，Cordova开发，CtMobile-Vue是在["CtMobile"](https://github.com/playerljc/CTMobile "点击了解CtMobile")的基础之上，加上了对[Vue](https://cn.vuejs.org// "点击了解Vue")的支持。
+&ensp;&ensp;一个移动端框架，支持页面的多种形式切换，页面转场，页面传值，通知等，适用于开发单页面应用(SPA)，混合开发(Hybrid)，Cordova开发，CtMobile-Vue是在["CtMobile"](https://github.com/playerljc/CTMobile "点击了解CtMobile")的基础之上，加上了对[Vue](https://cn.vuejs.org/ "点击了解Vue")的支持。
 ## 开发灵感
 &ensp;&ensp;期初刚接触Hybrid开发的时候公司选用的是jQueryMobile+Cordova的组合来开发混合应用，在用jQueryMobile的时候遇到了很多问题如管理类和Dom之间总是不能很好的有机结合在一起，当初的想法是如果在浏览器端每个局部页面和其管理类能像Android中的Activity一样就好了，所以灵感就来了，CtMobile的实现完全借助于Android中的Activity来实现。
 ## 三大概念
@@ -79,7 +79,7 @@ const App = CtMobile.CtMobileFactory.create({
 &ensp;&ensp;在初始化应用的代码中需要配置router选项，router是一个对象，对象的键唯一标识一个页面，值为一个对象，有两个属性component和config
 
 * component
-  返回一个Promise对象，代表这个页面的逻辑处理类，Promise中返回的对象应该是继承了Page.WrappedPage类的一个子类，Page.WrappedPage继承了React.Component。
+  返回一个Promise对象，代表这个页面的逻辑处理类。
   如用Webpack进行开发的时候可以定义成
   ```js
   component: import(/* webpackChunkName: "about" */ "../pages/about/index.vue")
@@ -287,14 +287,14 @@ this.$parent.ctmobile.startPage("#info?pageId=info");
 * 内存方式
 &ensp;&ensp;通过调用Page类的setRequest方法进行参数传递，在目标页面调用Page类的getRequest方法获取参数，使用内存方式的好处是可以在页面之间传递任何数据类型的数据，缺点是如果直接刷新此页的话不会保存上一回的数据，不像字符串方式可以永久保留参数的值
 
-   A.js
-   ```js
+   A.vue
+   ```html
    <!-- 向B.html传递参数 -->
-   this.$parent.parent.setRequest('requestCode',{a:1,b:2});
+   this.$parent.setRequest('requestCode',{a:1,b:2});
    this.$parent.ctmobile.startPage("#b?pageId=b");
    ```
-   B.js
-   ```js
+   B.vue
+   ```html
    pageAfterShow() {
        <!-- 获取A.html传递过来的参数 -->
        const parameter = JSON.stringify(this.$parent.getRequest());
