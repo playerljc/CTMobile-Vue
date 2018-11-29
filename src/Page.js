@@ -451,13 +451,31 @@ function slide(x, y, duration, beforeCallback) {
 
 /**
  * Page类
- * @type {{create: (function())}}
+ * @class Page
+ * @classdesc 管理所有和页面相关的操作
  */
 export default class page {
+  /**
+   * constructor
+   * @constructor
+   * @param props {Object} - {
+         *    ctmobile: {Object} - CtMobile,
+         *    id: {String} - id,
+         *    config: {Object} Page的一系列配置,
+         *    callback: {Function} componentDidMount的处理
+         * }
+   * @return {Object}
+   */
   constructor(props) {
     const {ctmobile, id, config = {}, el, callback} = props;
 
+    /***
+     * assign
+     */
     Object.assign(this, {
+      /**
+       * methods
+       */
       methods: {
 
         /**------------------- 生命周期函数 start-----------------**/
@@ -899,8 +917,14 @@ export default class page {
           return this.ctmobile;
         },
       },
+      /**
+       * created
+       * @callback
+       */
       created() {
-
+        /***
+         * assign
+         */
         Object.assign(this, {
           ctmobile,
           config,
@@ -921,8 +945,12 @@ export default class page {
         createPageDOM.call(this);
         layout.call(this);
       },
+      /**
+       * mounted
+       * @callback
+       */
       mounted() {
-        if (this.$children && this.$children.length == 1 && this.$children[0].pageCreate) {
+        if (this.$children && this.$children.length === 1 && this.$children[0].pageCreate) {
           this.$children[0].pageCreate();
         }
 
@@ -942,6 +970,10 @@ export default class page {
           this.callback(this);
         }
       },
+      /**
+       * destroyed 销毁的时候移除dom
+       * @callback
+       */
       destroyed() {
         this.getPageDOM().parentNode.removeChild(this.getPageDOM());
       }

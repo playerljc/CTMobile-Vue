@@ -163,8 +163,9 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: {
-      '@ctmobile/react': path.resolve(__dirname,'src/ctmobile-vue/'),
+      // '@ctmobile/vue': path.resolve(__dirname,'src/ctmobile-vue/'),
       'vue$': 'vue/dist/vue.esm.js',
+      // 'vue$': path.resolve(__dirname,'node_modules/@ctmobile/vue/node_modules/vue/dist/vue.esm.js'),
     }
   }
 };

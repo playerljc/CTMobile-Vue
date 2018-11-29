@@ -89,8 +89,6 @@ function createPage(id, callback) {
         const component = pageRouterConfig.component;
         if (component && component.then) {
           component.then((VueComponentDefault) => {
-
-
             if (VueComponentDefault) {
               // 每个页的逻辑组件
               VueComponent = VueComponentDefault.default;
@@ -138,7 +136,6 @@ function createPage(id, callback) {
         reject();
       }
     }
-
   });
 }
 

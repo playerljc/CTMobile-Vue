@@ -1,7 +1,7 @@
 [english](https://github.com/playerljc/CTMobile-React "english") | 简体中文
 
-## CtMobile-React
-&ensp;&ensp;一个移动端框架，支持页面的多种形式切换，页面转场，页面传值，通知等，适用于开发单页面应用(SPA)，混合开发(Hybrid)，Cordova开发，CtMobile-React是在["CtMobile"](https://github.com/playerljc/CTMobile "点击了解CtMobile")的基础之上，加上了对[React](https://reactjs.org/ "点击了解React")的支持。
+## CtMobile-Vue
+&ensp;&ensp;一个移动端框架，支持页面的多种形式切换，页面转场，页面传值，通知等，适用于开发单页面应用(SPA)，混合开发(Hybrid)，Cordova开发，CtMobile-Vue是在["CtMobile"](https://github.com/playerljc/CTMobile "点击了解CtMobile")的基础之上，加上了对[Vue](https://cn.vuejs.org// "点击了解Vue")的支持。
 ## 开发灵感
 &ensp;&ensp;期初刚接触Hybrid开发的时候公司选用的是jQueryMobile+Cordova的组合来开发混合应用，在用jQueryMobile的时候遇到了很多问题如管理类和Dom之间总是不能很好的有机结合在一起，当初的想法是如果在浏览器端每个局部页面和其管理类能像Android中的Activity一样就好了，所以灵感就来了，CtMobile的实现完全借助于Android中的Activity来实现。
 ## 三大概念
@@ -40,15 +40,13 @@
  3. 功能可以通过配置和api两种方式进行调用
 
 ##  安装
-需要依赖react和react-dom，使用的打包工具没有限制webpack,gulp...
+需要依赖vue，如果要是用.vue单文件组件，需要安装[vue-loader](https://github.com/vuejs/vue-loader)，[vue-template-compiler](https://www.npmjs.com/package/babel-plugin-transform-vue-jsx)，如果要支持jsx，需要安装[babel-plugin-transform-vue-jsx](https://github.com/vuejs/babel-plugin-transform-vue-jsx)，具体配置请参考[vue-cli](https://github.com/vuejs/vue-cli "vue-cli")。
 ```bash
-$ npm install react --save
-$ npm install react-dom --save
-$ npm install @ctmobile/react --save
+$ npm install @ctmobile/vue --save-dev
 ```
 
 ##  API文档
-[docs](https://playerljc.github.io/ctmobile-react/index.html)
+[docs](https://playerljc.github.io/ctmobile-vue/index.html)
 
 ## 快速开始
 
@@ -56,16 +54,15 @@ $ npm install @ctmobile/react --save
 --------
 
 ```js
-import CtMobile from '@ctmobile/react';
 const Router = {
     index: {
-      component: import(/* webpackChunkName: "index" */ "../pages/index"),
+      component: import(/* webpackChunkName: "index" */ "../pages/index/index.vue"),
     },
     info: {
-      component: import(/* webpackChunkName: "info" */ "../pages/info"),
+      component: import(/* webpackChunkName: "info" */ "../pages/info/index.vue"),
     },
     about: {
-      component: import(/* webpackChunkName: "about" */ "../pages/about"),
+      component: import(/* webpackChunkName: "about" */ "../pages/about/index.vue"),
     },
 };
 const App = CtMobile.CtMobileFactory.create({
@@ -85,7 +82,7 @@ const App = CtMobile.CtMobileFactory.create({
   返回一个Promise对象，代表这个页面的逻辑处理类，Promise中返回的对象应该是继承了Page.WrappedPage类的一个子类，Page.WrappedPage继承了React.Component。
   如用Webpack进行开发的时候可以定义成
   ```js
-  component: import(/* webpackChunkName: "about" */ "../pages/about")
+  component: import(/* webpackChunkName: "about" */ "../pages/about/index.vue")
   ```
 
 * config
@@ -97,75 +94,183 @@ const App = CtMobile.CtMobileFactory.create({
 
 **3. 编写页面对应的Page**
 --------------
-
-```js
-import React from 'react';
-import CtMobile from '@ctmobile/react';
-
-export default class extends CtMobile.Page.WrappedPage {
-    constructor(props) {
-      super(props);
-    }
-
-    /**
-     * @override
-     */
-    pageCreate(){
-        console.log('页面初始化');
-    }
-
-    /**
-     * @override
-     */
-    pageShow() {
-      console.log('page的DOM显示时调用');
-    }
-
-    /**
-     * @override
-     */
-    pageBeforeDestory(){
-      console.log('page的DOM销毁之前调用');
-    }
-
-    render() {
-      return(
-        <React.Fragment>
-          内容
-        </React.Fragment>
-      );
-    }
-}
+&ensp;&ensp;index.vue
+```html
+<template>
+  <div>
+    <header>
+      <p class="ct-header-title">index</p>
+    </header>
+    <div class="ct-content" style="top:3rem;bottom:0;">
+      <h1>index</h1>
+    </div>
+  </div>
+</template>
+<script src="./index.js"></script>
 ```
-&ensp;&ensp;编写一个类继承自Page.WrappedPage类即可完成一个页面的定义。需要注意的是render方法只需要返回局部组件即可，因为Page类的上层已经包装了一层
+&ensp;&ensp;index.js
+```js
+export default {
+  props: {
+    _pDom: {
+      type: HTMLDivElement,
+      require: true,
+    },
+    pageId: {
+      type: String,
+      require: true,
+      value: ''
+    }
+  },
+  data: () => {
+    return {};
+  },
+  created() {
+
+  },
+  mounted() {
+
+  },
+  methods: {
+    pageCreate() {
+      console.log(`${this.$parent.getId()}:pageCreate`);
+    },
+
+    /***
+     * 页面显示之前
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageBeforeShow(e) {
+      console.log(`${this.$parent.getId()}:pageBeforeShow`);
+    },
+
+    /***
+     * 页面显示
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageShow(e) {
+      console.log(`${this.$parent.getId()}:pageShow`);
+    },
+
+    /***
+     *  页面显示之后
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageAfterShow(e) {
+      console.log(`${this.$parent.getId()}:pageAfterShow`);
+    },
+
+    /***
+     * 页面暂停之前
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageBeforePause(e) {
+      console.log(`${this.$parent.getId()}:pageBeforePause`);
+    },
+
+    /***
+     * 页面暂停之后
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageAfterPause(e) {
+      console.log(`${this.$parent.getId()}:pageAfterPause`);
+    },
+
+    /***
+     * 页面恢复之前
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageBeforeRestore(e) {
+      console.log(`${this.$parent.getId()}:pageBeforeRestore`);
+    },
+
+    /***
+     * 页面恢复
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageRestore(e) {
+      console.log(`${this.$parent.getId()}:pageRestore`);
+    },
+
+    /***
+     * 页面恢复之后
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageAfterRestore(e) {
+      console.log(`${this.$parent.getId()}:pageAfterRestore`);
+    },
+
+    /***
+     * 页面DOM销毁之前
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageBeforeDestroy(e) {
+      console.log(`${this.$parent.getId()}:pageBeforeDestroy`);
+    },
+
+    /***
+     * pageResult
+     * @callback
+     * @override
+     * @param {Object} e - jQuery的event
+     * @param {string} resultCode - 返回的code
+     * @param {Object} bundle - 返回的参数
+     */
+    pageResult(e, resultCode, bundle) {
+      console.log(`${this.$parent.getId()}:pageResult`);
+    },
+
+    /***
+     * 如果添加了ct-data-intentfilter-action属性，满足条件后触发
+     * @callback
+     * @override
+     * @param {Object} bundle
+     * @param {Object} functions
+     */
+    pageReceiver(bundle, functions) {
+      console.log(`${this.$parent.getId()}:pageReceiver`);
+    }
+  }
+};
+```
+&ensp;&ensp;编写一个*.vue的单文件组件即可，需要注意的是此组件有两个props，_pDom和pageId，其中_pDom是此Page顶层的dom，pageId是Router的config中配置的键，在template中只需返回局部代码即可，因为在上层已经包装了一层
 ```html
 <div data-ct-data-role="page"></div>
 ```
-的顶层容器，还需要注意的是componentDidMount方法,Page.WrappedPage类已经注册了componentDidMount方法，所以自定的Page类需要在componentDidMount方法中手动调用父类的componentDidMount
-```js
-componentDidMount() {
-    super.componentDidMount(...arguments);
-}
-```
-&ensp;&ensp;其中pageCreate，pageShow和pageBeforeDestory是Page的生命周期函数，更多生命周期函数请参考[Page的生命周期](#8-page的生命周期)
+的顶层容器。
+&ensp;&ensp;其中已page开头的是Page的生命周期函数，更多生命周期函数请参考[Page的生命周期](#8-page的生命周期)
 
 **4. 跳转到一个新页面**
 -----------
 &ensp;跳转到一个新页面可以有两种方式
 * 标签方式
 ```js
-import React from 'react';
-import CtMobile from '@ctmobile/react';
-const {Link, Back} = CtMobile;
-
-<Link pageId="info">跳转到info页面</Link>
+<ctmobile-link pageId="info">跳转到info页面</ctmobile-link>
 ```
-&ensp;&ensp;在Link标签中使用pageId属性就可以跳转到一个新的页面，其中pageId的值为Router中的键。
+&ensp;&ensp;在ctmobile-link标签中使用pageId属性就可以跳转到一个新的页面，其中pageId的值为Router中的键，ctmobile-link在全局都可以使用。
 
 * api方式
-使用App.startPage方法跳转到一个新的页面，其中App对象是初始化应用后的返回值，如果是在Page类中可以通过this.props.ctmobile获取
+使用App.startPage方法跳转到一个新的页面，其中App对象是初始化应用后的返回值，如果是在Page类中可以通过this.$parent.ctmobile获取
 ```js
-this.props.ctmobile.startPage("#info?pageId=info");
+this.$parent.ctmobile.startPage("#info?pageId=info");
 ```
 
 **5. 页面间传递参数**
@@ -173,11 +278,11 @@ this.props.ctmobile.startPage("#info?pageId=info");
 * 字符串方式
   * 使用parameter属性
   ```js
-  <Link pageId="about" parameter="&a=1&b=2"/>
+  <ctmobile-link pageId="about" parameter="&a=1&b=2" />
   ```
   * 使用api方式
   ```js
-  this.props.ctmobile.startPage("#info?pageId=info&a=1&b=2");
+  this.$parent.ctmobile.startPage("#info?pageId=info&a=1&b=2");
   ```
 * 内存方式
 &ensp;&ensp;通过调用Page类的setRequest方法进行参数传递，在目标页面调用Page类的getRequest方法获取参数，使用内存方式的好处是可以在页面之间传递任何数据类型的数据，缺点是如果直接刷新此页的话不会保存上一回的数据，不像字符串方式可以永久保留参数的值
@@ -185,14 +290,14 @@ this.props.ctmobile.startPage("#info?pageId=info");
    A.js
    ```js
    <!-- 向B.html传递参数 -->
-   this.props.parent.setRequest('requestCode',{a:1,b:2});
-   this.props.ctmobile.startPage("#b?pageId=b");
+   this.$parent.parent.setRequest('requestCode',{a:1,b:2});
+   this.$parent.ctmobile.startPage("#b?pageId=b");
    ```
    B.js
    ```js
    pageAfterShow() {
        <!-- 获取A.html传递过来的参数 -->
-       const parameter = JSON.stringify(this.props.parent.getRequest());
+       const parameter = JSON.stringify(this.$parent.getRequest());
 	   console.log('parameter',parameter);
 	}
    ```
@@ -204,7 +309,7 @@ this.props.ctmobile.startPage("#info?pageId=info");
 ```js
 const Router = {
     PopUpDialog:{
-        component: import(/* webpackChunkName: "index" */ "../pages/PopUpDialog"),
+        component: import(/* webpackChunkName: "index" */ "../pages/PopUpDialog/index.vue"),
         config:{
             mode:'result',
             /*
@@ -216,75 +321,70 @@ const Router = {
 };
 ```
 
-&ensp;&ensp;举个例子，当前有两个页面index.jsx，PopUpDialog.jsx两个页面。index.jsx中有个弹出按钮，点击按钮弹出PopUpDialog页面
+&ensp;&ensp;举个例子，当前有两个页面index.vue，PopUpDialog.vue两个页面。index.vue中有个弹出按钮，点击按钮弹出PopUpDialog页面
 
-&ensp;&ensp;index.js定义
-```js
-import React from 'react';
-import CtMobile from '@ctmobile/react';
-
-const {Link} = CtMobile;
-
-export default class extends CtMobile.Page.WrappedPage {
-  constructor(props){
-    super(props);
-    this.state = {
-        resultText:'',
+&ensp;&ensp;index.vue定义
+```html
+<template>
+    <div>
+        <ctmobile-link pageId="PopUpDialog">弹出PopUpDialog</ctmobile-link>
+        <div>{{resultText}}<div>
+    </div>
+</template>
+<script>
+    export default {
+      props: {
+        _pDom: {
+          type: HTMLDivElement,
+          require: true,
+        },
+        pageId: {
+          type: String,
+          require: true,
+          value: ''
+        }
+      },
+      data:() => {
+        return {
+            resultText:''
+        }
+      },
+      methods:{
+          /**
+           * PopUpDialog返回时触发
+           * override
+           */
+          pageResult(e, resultCode, bundle) {
+             console.log("resultCode", resultCode, "bundle", JSON.stringify(bundle));
+             this.setState({
+                resultText: `resultCode:${resultCode}\r\nbundle:${JSON.stringify(bundle)}`
+             });
+          }
+      }
     }
-  }
-
-  /**
-   * PopUpDialog返回时触发
-   * override
-   */
-  pageResult(e, resultCode, bundle) {
-     console.log("resultCode", resultCode, "bundle", JSON.stringify(bundle));
-     this.setState({
-        resultText: `resultCode:${resultCode}\r\nbundle:${JSON.stringify(bundle)}`
-     });
-  }
-
-  render() {
-    return (
-        <React.Fragment>
-            <Link pageId="PopUpDialog">弹出PopUpDialog</Link>
-            <div>{this.state.resultText}<div>
-        </React.Fragment>
-    );
-  }
-}
+</script>
 ```
 
-&ensp;&ensp;PopUpDialog.js的定义
-```js
-import React from 'react';
-import CtMobile from '@ctmobile/react';
-
-export default class extends CtMobile.Page.WrappedPage {
-  constructor(props){
-    super(props);
-  }
-
-  render() {
-    return (
-        <React.Fragment>
-          <button onClick={() => {
-            this.props.parent.setResult('PopUpDialog', {a: 1, b: 2});
-            this.props.parent.over();
-          }}>返回</button>
-        </React.Fragment>
-    );
-  }
-}
+&ensp;&ensp;PopUpDialog.vue的定义
+```html
+<template>
+    <button @click="
+        $parent.setResult('PopUpDialog', {a: 1, b: 2});
+        $parent.over();
+    ">返回</button>
+</template>
+<script>
+    export default {}
+</script>
 ```
-&ensp;&ensp;index.js中重写pageResult方法，此方法在PopUpDialog返回或手动调用finish方法后被触发，pageResult的有三个参数e，resultCode，bundle，其中resultCode用来区分不同的来源，bundle是被带回来的值。
-&ensp;&ensp;PopUpDialog.js中调用this.props.parent.setResult(resultCode,bundle);方法来设置返回的值，在调用this.props.parent.over();方法后页面关闭。
+&ensp;&ensp;index.vue中重写pageResult方法，此方法在PopUpDialog返回或手动调用finish方法后被触发，pageResult的有三个参数e，resultCode，bundle，其中resultCode用来区分不同的来源，bundle是被带回来的值。
+&ensp;&ensp;PopUpDialog.vue中调用this.$parent.setResult(resultCode,bundle);方法来设置返回的值，在调用this.$parent.over();方法后页面关闭。
 
 带有返回值的页面使用场景一般分为两种
  * 多对一
- a.jsx,b.jsx,c.jsx...都弹出d.jsx
+ a.vue,b.vue,c.vue...都弹出d.vue
  * 一对多
- a.jsx弹出b.jsx,c.jsx,d.jsx...
+ a.vue弹出b.vue,c.vue,d.vue...
 
 在多对一的情况下可以通过setRequest方法把父页面的标志传递过去。
 
@@ -302,10 +402,10 @@ export default class extends CtMobile.Page.WrappedPage {
   &ensp;&ensp;单例模式(当点击返回时会销毁)
 
   &ensp;&ensp;和Android中single一样,举个例子，加入有如下的页面开发顺序 :
-  index.jsx -> a.jsx -> b.jsx -> c.jsx -> d.jsx -> b.jsx
-  如果把b.jsx的mode设置为single，那么执行上述页面顺序后，   历史栈中当前是 index.jsx -> a.jsx -> b.jsx
-  也是删除了c.jsx和d.jsx，删除的同事也会调用相应的生命周期函数。
-  但是如果在b.jsx中点击返回那么b.jsx还是会销毁的。
+  index.vue -> a.vue -> b.vue -> c.vue -> d.vue -> b.vue
+  如果把b.vue的mode设置为single，那么执行上述页面顺序后，   历史栈中当前是 index.vue -> a.vue -> b.vue
+  也是删除了c.vue和d.vue，删除的同时也会调用相应的生命周期函数。
+  但是如果在b.vue中点击返回那么b.vue还是会销毁的。
 
  * singleInstance
   &ensp;&ensp;完全的单例模式(在任何时候都不会被销毁)
@@ -353,82 +453,66 @@ Page一共有10个生命周期函数
  * 通过配置注册
    在Router的中加入intentfilterAction，intentfilterCategorys属性进行注册
    Page中重写pageReceiver方法
-   ```js
-   import React from 'react';
-   import CtMobile from '@ctmobile/react';
-   export default class extends CtMobile.Page.WrappedPage {
-      constructor(props){
-        super(props);
-        this.state = {
-            resultText:'',
-        };
+   ```html
+   <template>
+      <div>{{resultText}}</div>
+   </template>
+   <script>
+      export default {
+         data:() => {
+            return {
+                resultText: ''
+            };
+         },
+         methods:{
+            /**
+            * @override
+            */
+            pageReceiver(intent) {
+                this.resultText = JSON.stringify(intent);
+            }
+         }
       }
-
-      /**
-       * @override
-       */
-      pageReceiver(intent) {
-        this.setState({
-            resultText:JSON.stringify(intent),
-        });
-      }
-
-      render(){
-        return(
-            <React.Fragment>
-              {this.state.resultText}
-            </React.Fragment>
-        );
-      }
-   }
+   </script>
    ```
  * 通过api注册
-   ```js
-   import React from 'react';
-   import CtMobile from '@ctmobile/react';
-   export default class extends CtMobile.Page.WrappedPage {
-     constructor(props){
-       super(props);
-       this.state = {
-          resultText: '',
-       };
-     }
+   ```html
+   <template>
+        <div>{{resultText}}</div>
+   </template>
+   <script>
+        export default {
+            data(){
+                return {
+                    resultText: ''
+                }
+            },
+            methods:{
+                /**
+                 * @override
+                 */
+                 pageCreate() {
+                   this.onRegisterReceiver = this.onRegisterReceiver.bind(this);
 
-     /**
-       * @override
-       */
-     pageCreate() {
-       this.onRegisterReceiver = this.onRegisterReceiver.bind(this);
-
-        // 注册borasdcast
-        this.props.ctmobile.registerReceiver({
-          el: this.props.parent.getPageDOM(),
-          action: 'borasdcast_normal_api',
-          priority: 1,
-          categorys: []
-        }, this.onRegisterReceiver);
-     }
-
-     onRegisterReceiver(intent) {
-        this.setState({
-            resultText:JSON.stringify(intent),
-        });
-     }
-
-     render() {
-        return (
-            <React.Fragment>
-                {this.state.resultText}
-            </React.Fragment>
-        );
-     }
-
-   }
+                    // 注册borasdcast
+                    this.$parent.ctmobile.registerReceiver({
+                      el: this.$parent.getPageDOM(),
+                      action: 'borasdcast_normal_api',
+                      priority: 1,
+                      categorys: []
+                    }, this.onRegisterReceiver);
+                 },
+                 onRegisterReceiver(intent) {
+                    this.resultText = JSON.stringify(intent);
+                 }
+            }
+        }
+   </script>
    ```
  * 发送无序广播
  在Page类中调用CtMobile的sendBroadcast方法
  ```js
- this.props.ctmobile.sendBroadcast({
+ this.$parent.ctmobile.sendBroadcast({
     action: 'actionCode',
     categorys: ['c1','c2'],
     bundle: {
@@ -440,7 +524,7 @@ Page一共有10个生命周期函数
  * 发送有序广播
  在Page类中调用CtMobile的sendOrderedBroadcast方法
  ```js
- this.props.ctmobile.sendOrderedBroadcast({
+ this.$parent.ctmobile.sendOrderedBroadcast({
     action: 'actionCode',
     categorys: ['c1','c2'],
     bundle: {
@@ -456,7 +540,7 @@ Page一共有10个生命周期函数
 ```js
 const Router = {
   index:{
-    component: import(/* webpackChunkName: "index" */ "../pages/index"),
+    component: import(/* webpackChunkName: "index" */ "../pages/index/index.vue"),
     config:{
         intentfilterPriority:0
     }
@@ -466,7 +550,7 @@ const Router = {
  使用api注册设置priority
  ```js
  // 注册borasdcast
- this.props.ctmobile.registerReceiver({
+ this.$parent.ctmobile.registerReceiver({
     action: 'actionCode',
     priority: 0,
     categorys: ['c1','c2']
@@ -485,30 +569,22 @@ const Router = {
  * 是否增加历史
  如果不想让新跳转的页面增加到历史栈中，可以设置reload属性为true来阻止浏览器增加历史。
  ```js
-<Link pageId="a" reload="true">info A</Link>
+<ctmobile-link pageId="a" reload="true">info A</ctmobile-link>
  ```
  ```js
- this.props.ctmobile.startPage('#a?pageId=a',{
+ this.$parent.ctmobile.startPage('#a?pageId=a',{
     reload:true
  });
  ```
- 比如index.jsx -> a.jsx，那么历史栈中只有a.jsx
+ 比如index.vue -> a.vue，那么历史栈中只有a.vue
 
- * 使用Back进行页面的返回
- ```js
- import React from 'react';
- import CtMobile from '@ctmobile/react';
- const {Back} = CtMobile;
-
- export default class extends CtMobile.Page.WrappedPage {
-    render(){
-        return(
-            <React.Fragment>
-                <Back/>
-            </React.Fragment>
-        );
-    }
- }
+ * 使用ctmobile-back进行页面的返回
+ ctmobile-back可以在任何地方使用
+ ```html
+ <template>
+    <ctmobile-back/>
+ </template>
+ <script>export default {}</script>
  ```
 
 ## 属性配置
@@ -544,19 +620,21 @@ const Router = {
 &ensp;&ensp;checkou后进入demo目录
 ```bash
 $ npm install
+$ npm run devDll
 $ npm start
 ```
 &ensp;&ensp;在浏览器上输入localhost:8000即可访问到demo的主页面
 
 ## Note程序的运行
-&ensp;&ensp;Note是一个使用CtMobile-React来编写的一个便签程序,checkout后进入note
+&ensp;&ensp;Note是一个使用CtMobile-Vue来编写的一个便签程序,checkout后进入note
 ```bash
 $ npm install
+$ npm run devDll
 $ npm start
 ```
 在浏览器上输入localhost:8001即可访问到demo的主页面。
 
-![](https://github.com/playerljc/CTMobile-React/blob/master/outimages/note/note-index.png "note")
+![](https://github.com/playerljc/CTMobile-Vue/blob/master/outimages/note/note-index.png "note")
 
 ## 讨论群
 ![](https://github.com/playerljc/CTMobile/raw/master/outimages/qq.png "讨论群")

@@ -1,5 +1,5 @@
 import Media from "../util/media";
-import CtMobile from "@ctmobile/react";
+import CtMobile from "@ctmobile/vue";
 import Router from "../util/Router";
 import DB from '../util/DB';
 import Vue from 'vue';

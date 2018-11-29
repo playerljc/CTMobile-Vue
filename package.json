@@ -1,6 +1,6 @@
 {
   "name": "@ctmobile/vue",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "CTMobile的Vue实现",
   "main": "lib/index.js",
   "scripts": {
