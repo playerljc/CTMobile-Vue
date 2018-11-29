@@ -28,16 +28,15 @@
 </header>
 
 <article>
-    <h2>Quick start</h2><h2><strong>1. Initialize the application</strong></h2><pre class="prettyprint source lang-js"><code>import CtMobile from '@ctmobile/react';
-const Router = {
+    <h2>Quick start</h2><h2><strong>1. Initialize the application</strong></h2><pre class="prettyprint source lang-js"><code>const Router = {
     index: {
-      component: import(/* webpackChunkName: &quot;index&quot; */ &quot;../pages/index&quot;),
+      component: import(/* webpackChunkName: &quot;index&quot; */ &quot;../pages/index/index.vue&quot;),
     },
     info: {
-      component: import(/* webpackChunkName: &quot;info&quot; */ &quot;../pages/info&quot;),
+      component: import(/* webpackChunkName: &quot;info&quot; */ &quot;../pages/info/index.vue&quot;),
     },
     about: {
-      component: import(/* webpackChunkName: &quot;about&quot; */ &quot;../pages/about&quot;),
+      component: import(/* webpackChunkName: &quot;about&quot; */ &quot;../pages/about/index.vue&quot;),
     },
 };
 const App = CtMobile.CtMobileFactory.create({
@@ -48,9 +47,9 @@ const App = CtMobile.CtMobileFactory.create({
 <h2><strong>2. Router</strong></h2><p>&ensp;&ensp;In the code to initialize the application, you need to configure the router option. The router is an object. The object's key uniquely identifies a page. The value is an object. There are two attributes, component and config.</p>
 <ul>
 <li><p>component
-Returns a Promise object representing the logical processing class of this page. The object returned in Promise should be a subclass of the Page.WrappedPage class. Page.WrappedPage inherits React.Component。
+Returns a Promise object representing the logical processing class of this page.
 When developing with Webpack, it can be defined as</p>
-<pre class="prettyprint source lang-js"><code>component: import(/* webpackChunkName: &quot;about&quot; */ &quot;../pages/about&quot;)</code></pre></li>
+<pre class="prettyprint source lang-js"><code>component: import(/* webpackChunkName: &quot;about&quot; */ &quot;../pages/about/index.vue&quot;)</code></pre></li>
 <li><p>config</p>
 <ul>
 <li>transition: {string} - Excessive type</li>
@@ -61,76 +60,184 @@ When developing with Webpack, it can be defined as</p>
 </ul>
 </li>
 </ul>
-<h2><strong>3. Write the page corresponding to the page</strong></h2><pre class="prettyprint source lang-js"><code>import React from 'react';
-import CtMobile from '@ctmobile/react';
-
-export default class extends CtMobile.Page.WrappedPage {
-    constructor(props) {
-      super(props);
+<h2><strong>3. Write the page corresponding to the page</strong></h2><p>&ensp;&ensp;index.vue</p>
+<pre class="prettyprint source lang-html"><code>&lt;template>
+  &lt;div>
+    &lt;header>
+      &lt;p class=&quot;ct-header-title&quot;>index&lt;/p>
+    &lt;/header>
+    &lt;div class=&quot;ct-content&quot; style=&quot;top:3rem;bottom:0;&quot;>
+      &lt;h1>index&lt;/h1>
+    &lt;/div>
+  &lt;/div>
+&lt;/template>
+&lt;script src=&quot;./index.js&quot;>&lt;/script></code></pre><p>&ensp;&ensp;index.js</p>
+<pre class="prettyprint source lang-js"><code>export default {
+  props: {
+    _pDom: {
+      type: HTMLDivElement,
+      require: true,
+    },
+    pageId: {
+      type: String,
+      require: true,
+      value: ''
     }
+  },
+  data: () => {
+    return {};
+  },
+  created() {
 
-    /**
+  },
+  mounted() {
+
+  },
+  methods: {
+    pageCreate() {
+      console.log(`${this.$parent.getId()}:pageCreate`);
+    },
+
+    /***
+     * Before the page is displayed
+     * @callback
      * @override
+     * @param {Object} e
      */
-    pageCreate(){
-        console.log('page initial');
-    }
+    pageBeforeShow(e) {
+      console.log(`${this.$parent.getId()}:pageBeforeShow`);
+    },
 
-    /**
+    /***
+     * page show
+     * @callback
      * @override
+     * @param {Object} e
      */
-    pageShow() {
-      console.log('Called when the page DOM is displayed');
-    }
+    pageShow(e) {
+      console.log(`${this.$parent.getId()}:pageShow`);
+    },
 
-    /**
+    /***
+     *  page after show
+     * @callback
      * @override
+     * @param {Object} e
      */
-    pageBeforeDestory(){
-      console.log('Called before the page DOM is destroyed');
-    }
+    pageAfterShow(e) {
+      console.log(`${this.$parent.getId()}:pageAfterShow`);
+    },
 
-    render() {
-      return(
-        &lt;React.Fragment>
-          content
-        &lt;/React.Fragment>
-      );
+    /***
+     * Before the page is paused
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageBeforePause(e) {
+      console.log(`${this.$parent.getId()}:pageBeforePause`);
+    },
+
+    /***
+     * After the page is paused
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageAfterPause(e) {
+      console.log(`${this.$parent.getId()}:pageAfterPause`);
+    },
+
+    /***
+     * Before page recovery
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageBeforeRestore(e) {
+      console.log(`${this.$parent.getId()}:pageBeforeRestore`);
+    },
+
+    /***
+     * Page recovery
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageRestore(e) {
+      console.log(`${this.$parent.getId()}:pageRestore`);
+    },
+
+    /***
+     * After the page is restored
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageAfterRestore(e) {
+      console.log(`${this.$parent.getId()}:pageAfterRestore`);
+    },
+
+    /***
+     * Before the page DOM is destroyed
+     * @callback
+     * @override
+     * @param {Object} e
+     */
+    pageBeforeDestroy(e) {
+      console.log(`${this.$parent.getId()}:pageBeforeDestroy`);
+    },
+
+    /***
+     * pageResult
+     * @callback
+     * @override
+     * @param {Object} e - jQuery的event
+     * @param {string} resultCode - return code
+     * @param {Object} bundle - return parameter
+     */
+    pageResult(e, resultCode, bundle) {
+      console.log(`${this.$parent.getId()}:pageResult`);
+    },
+
+    /***
+     * If the ct-data-intentfilter-action attribute is added, the condition is triggered.
+     * @callback
+     * @override
+     * @param {Object} bundle
+     * @param {Object} functions
+     */
+    pageReceiver(bundle, functions) {
+      console.log(`${this.$parent.getId()}:pageReceiver`);
     }
-}</code></pre><p>&ensp;&ensp;Write a class that inherits from the Page.WrappedPage class to complete a page definition. It should be noted that the render method only needs to return the local component, because the upper layer of the Page class has been wrapped with a layer.</p>
-<pre class="prettyprint source lang-html"><code>&lt;div data-ct-data-role=&quot;page&quot;>&lt;/div></code></pre><p>The top-level container, also need to pay attention to the componentDidMount method, the Page.WrappedPage class has registered the componentDidMount method, so the custom Page class needs to manually call the parent class's componentDidMount in the componentDidMount method.</p>
-<pre class="prettyprint source lang-js"><code>componentDidMount() {
-    super.componentDidMount(...arguments);
-}</code></pre><p>&ensp;&ensp;Among them pageCreate, pageShow and pageBeforeDestory are the life cycle functions of Page, more life cycle functions please refer to<a href="#8-page-life-cycle">Page life cycle</a></p>
+  }
+};</code></pre><p>&ensp;&ensp;Write a single file component of *.vue. Note that this component has two props, _pDom and pageId, where _pDom is the dom at the top of this Page, and pageId is the key configured in the config of Router. In the template, you only need to return the local code, because the layer has been wrapped in the upper layer.</p>
+<pre class="prettyprint source lang-html"><code>&lt;div data-ct-data-role=&quot;page&quot;>&lt;/div></code></pre><p>The top container.
+&ensp;&ensp;Among them pageCreate, pageShow and pageBeforeDestory are the life cycle functions of Page, more life cycle functions please refer to <a href="#8-page-life-cycle">Page life cycle</a></p>
 <h2><strong>4. Jump to a new page</strong></h2><p>&ensp;There are two ways to jump to a new page.</p>
 <ul>
-<li>Label method
-<code>`</code>js
-import React from 'react';
-import CtMobile from '@ctmobile/react';
-const {Link, Back} = CtMobile;</li>
+<li><p>Label method</p>
+<pre class="prettyprint source lang-html"><code>&lt;ctmobile-link pageId=&quot;info&quot;>Jump to the info page&lt;/ctmobile-link></code></pre><p>&ensp;&ensp;Using the pageId attribute in the Link tag, you can jump to a new page where the value of pageId is the key in Router，ctmobile-link can be used globally.</p>
+</li>
+<li><p>api mode
+Use the App.startPage method to jump to a new page, where the App object is the return value after initializing the application. If it is in the Page class, it can be obtained by this.$parent.ctmobile.</p>
+<pre class="prettyprint source lang-js"><code>this.$parent.ctmobile.startPage(&quot;#info?pageId=info&quot;);</code></pre></li>
 </ul>
-<p><Link pageId="info">Jump to the info page</Link></p>
-<pre class="prettyprint source"><code>&ensp;&ensp;Using the pageId attribute in the Link tag, you can jump to a new page where the value of pageId is the key in Router.
-
-* api mode
-Use the App.startPage method to jump to a new page, where the App object is the return value after initializing the application. If it is in the Page class, it can be obtained by this.props.ctmobile.
-```js
-this.props.ctmobile.startPage(&quot;#info?pageId=info&quot;);</code></pre><h2><strong>5. Passing parameters between pages</strong></h2><ul>
+<h2><strong>5. Passing parameters between pages</strong></h2><ul>
 <li>string mode<ul>
-<li>use the parameter attribute<pre class="prettyprint source lang-js"><code>&lt;Link pageId=&quot;about&quot; parameter=&quot;&a=1&b=2&quot;/></code></pre></li>
-<li>use api mode<pre class="prettyprint source lang-js"><code>this.props.ctmobile.startPage(&quot;#info?pageId=info&a=1&b=2&quot;);</code></pre></li>
+<li>use the parameter attribute<pre class="prettyprint source lang-js"><code>&lt;ctmobile-link pageId=&quot;about&quot; parameter=&quot;&a=1&b=2&quot; /></code></pre></li>
+<li>use api mode<pre class="prettyprint source lang-js"><code>this.$parent.ctmobile.startPage(&quot;#info?pageId=info&a=1&b=2&quot;);</code></pre></li>
 </ul>
 </li>
 <li><p>memory mode
 &ensp;&ensp;By calling the setRequest method of the Page class to pass parameters, calling the getRequest method of the Page class on the target page to get the parameters. The advantage of using the memory method is that any data type data can be passed between pages. The disadvantage is that if the page is directly refreshed, Will save the last data, unlike the string method, you can permanently retain the value of the parameter.</p>
-<p> A.js</p>
-<pre class="prettyprint source lang-js"><code> &lt;!-- Pass parameters to B.html -->
- this.props.parent.setRequest('requestCode',{a:1,b:2});
- this.props.ctmobile.startPage(&quot;#b?pageId=b&quot;);</code></pre><p> B.js</p>
-<pre class="prettyprint source lang-js"><code> pageAfterShow() {
+<p> A.vue</p>
+<pre class="prettyprint source lang-html"><code> &lt;!-- Pass parameters to B.html -->
+ this.$parent.setRequest('requestCode',{a:1,b:2});
+ this.$parent.ctmobile.startPage(&quot;#b?pageId=b&quot;);</code></pre><p> B.vue</p>
+<pre class="prettyprint source lang-html"><code> pageAfterShow() {
      &lt;!-- Get the parameters passed by A.html -->
-     const parameter = JSON.stringify(this.props.parent.getRequest());
+     const parameter = JSON.stringify(this.$parent.getRequest());
      console.log('parameter',parameter);
   }</code></pre><p>&ensp;&ensp;Note that you need to call the getRequest method in the callback of pageAfterShow. As long as the pageAfterShow function is called, you can get the parameters by calling the getRequest method anywhere.</p>
 </li>
@@ -138,7 +245,7 @@ this.props.ctmobile.startPage(&quot;#info?pageId=info&quot;);</code></pre><h2><s
 <h2><strong>6. Page with return value</strong></h2><p>&ensp;&ensp; Add mode: &quot;result&quot; or mode: &quot;singleInstanceResult&quot; attribute to the router's config</p>
 <pre class="prettyprint source lang-js"><code>const Router = {
     PopUpDialog:{
-        component: import(/* webpackChunkName: &quot;index&quot; */ &quot;../pages/PopUpDialog&quot;),
+        component: import(/* webpackChunkName: &quot;index&quot; */ &quot;../pages/PopUpDialog/index.vue&quot;),
         config:{
             mode:'result',
             /*
@@ -147,67 +254,62 @@ this.props.ctmobile.startPage(&quot;#info?pageId=info&quot;);</code></pre><h2><s
             */
         }
     }
-};</code></pre><p>&ensp;&ensp;For example, there are currently two pages index.jsx, PopUpDialog.jsx two pages. There is an eject button in index.jsx, click the button to pop up the PopUpDialog page.</p>
-<p>&ensp;&ensp;Index.js definition</p>
-<pre class="prettyprint source lang-js"><code>import React from 'react';
-import CtMobile from '@ctmobile/react';
-
-const {Link} = CtMobile;
-
-export default class extends CtMobile.Page.WrappedPage {
-  constructor(props){
-    super(props);
-    this.state = {
-        resultText:'',
+};</code></pre><p>&ensp;&ensp;For example, there are currently two pages index.vue, PopUpDialog.vue two pages. There is an eject button in index.vue, click the button to pop up the PopUpDialog page.</p>
+<p>&ensp;&ensp;index.vue definition</p>
+<pre class="prettyprint source lang-html"><code>&lt;template>
+    &lt;div>
+        &lt;ctmobile-link pageId=&quot;PopUpDialog&quot;>Popup PopUpDialog&lt;/ctmobile-link>
+        &lt;div>{{resultText}}&lt;div>
+    &lt;/div>
+&lt;/template>
+&lt;script>
+    export default {
+      props: {
+        _pDom: {
+          type: HTMLDivElement,
+          require: true,
+        },
+        pageId: {
+          type: String,
+          require: true,
+          value: ''
+        }
+      },
+      data:() => {
+        return {
+            resultText:''
+        }
+      },
+      methods:{
+          /**
+           * PopUpDialogTrigger on return
+           * override
+           */
+          pageResult(e, resultCode, bundle) {
+             console.log(&quot;resultCode&quot;, resultCode, &quot;bundle&quot;, JSON.stringify(bundle));
+             this.setState({
+                resultText: `resultCode:${resultCode}\r\nbundle:${JSON.stringify(bundle)}`
+             });
+          }
+      }
     }
-  }
-
-  /**
-   * Triggered when PopUpDialog returns
-   * override
-   */
-  pageResult(e, resultCode, bundle) {
-     console.log(&quot;resultCode&quot;, resultCode, &quot;bundle&quot;, JSON.stringify(bundle));
-     this.setState({
-        resultText: `resultCode:${resultCode}\r\nbundle:${JSON.stringify(bundle)}`
-     });
-  }
-
-  render() {
-    return (
-        &lt;React.Fragment>
-            &lt;Link pageId=&quot;PopUpDialog&quot;>Popup PopUpDialog&lt;/Link>
-            &lt;div>{this.state.resultText}&lt;div>
-        &lt;/React.Fragment>
-    );
-  }
-}</code></pre><p>&ensp;&ensp;Definition of PopUpDialog.js</p>
-<pre class="prettyprint source lang-js"><code>import React from 'react';
-import CtMobile from '@ctmobile/react';
-
-export default class extends CtMobile.Page.WrappedPage {
-  constructor(props){
-    super(props);
-  }
-
-  render() {
-    return (
-        &lt;React.Fragment>
-          &lt;button onClick={() => {
-            this.props.parent.setResult('PopUpDialog', {a: 1, b: 2});
-            this.props.parent.over();
-          }}>return&lt;/button>
-        &lt;/React.Fragment>
-    );
-  }
-}</code></pre><p>&ensp;&ensp;Index.js overrides the pageResult method. This method is triggered after PopUpDialog returns or manually calls the finish method. The pageResult has three parameters e, resultCode, bundle, where resultCode is used to distinguish different sources, and the bundle is the value brought back.
-&ensp;&ensp;PopUpDialog.js calls the this.props.parent.setResult(resultCode,bundle); method to set the returned value, and the page closes after calling the this.props.parent.over(); method.</p>
+&lt;/script></code></pre><p>&ensp;&ensp;Definition of PopUpDialog.vue</p>
+<pre class="prettyprint source lang-html"><code>&lt;template>
+    &lt;button @click=&quot;
+        $parent.setResult('PopUpDialog', {a: 1, b: 2});
+        $parent.over();
+    &quot;>return&lt;/button>
+&lt;/template>
+&lt;script>
+    export default {}
+&lt;/script></code></pre><p>&ensp;&ensp;index.vue rewrites the pageResult method. This method is triggered after PopUpDialog returns or manually calls the finish method. The pageResult has three parameters e, resultCode, bundle, where resultCode is used to distinguish different sources, bundle is Bring back the value.
+&ensp;&ensp;PopUpDialog.vue calls the this.$parent.setResult(resultCode,bundle); method to set the returned value, and the page closes after calling the this.$parent.over(); method.</p>
 <p>The page usage scenarios with return values are generally divided into two types.</p>
 <ul>
 <li>Many to one
-A.jsx, b.jsx, c.jsx... all pop up d.jsx</li>
+a.vue, b.vue, c.vue... all pop up d.vue</li>
 <li>One-to-many
-A.jsx pops up b.jsx, c.jsx, d.jsx...</li>
+a.vue pops up b.vue, c.vue, d.vue...</li>
 </ul>
 <p>In the case of many-to-one, the flag of the parent page can be passed through the setRequest method.</p>
 <p>In the case of one-to-many, different sources can be distinguished by the requestCode of the pageResult method.</p>
@@ -220,10 +322,10 @@ A.jsx pops up b.jsx, c.jsx, d.jsx...</li>
 <li><p>single
 &ensp;&ensp;Singleton mode (destroyed when clicked back)</p>
 <p>&ensp;&ensp;Like Single in Android, for example, add the following page development order:
-index.jsx -&gt; a.jsx -&gt; b.jsx -&gt; c.jsx -&gt; d.jsx -&gt; b.jsx
-If the mode of b.jsx is set to single, then after executing the above page order, the history stack is currently index.jsx -&gt; a.jsx -&gt; b.jsx
-c.jsx and d.jsx are also deleted, and the deleted colleague also calls the corresponding lifecycle function.
-But if you click back in b.jsx then b.jsx will still be destroyed.</p>
+index.vue -&gt; a.vue -&gt; b.vue -&gt; c.vue -&gt; d.vue -&gt; b.vue
+If the mode of b.vue is set to single, then after executing the above page order, the history stack is currently index.vue -&gt; a.vue -&gt; b.vue
+c.vue and d.vue are also deleted, and the deleted colleague also calls the corresponding lifecycle function.
+But if you click back in b.vue then b.vue will still be destroyed.</p>
 </li>
 <li><p>singleInstance
 &ensp;&ensp;Complete singleton mode (will not be destroyed at any time)</p>
@@ -258,79 +360,62 @@ But if you click back in b.jsx then b.jsx will still be destroyed.</p>
 </ul>
 <h2><strong>10. borasdcast</strong></h2><p>&ensp;&ensp;Drawing on the concept of Borsdcast in Android, it provides a series of functions for data transfer between Pages. The broadcast is divided into ordered and unordered, and broadcast can be realized through configuration and api.</p>
 <ul>
-<li><p>Register by configuration
+<li>Register by configuration
 Add the intentfilterAction to the Router, register the intentfilterCategorys property.
-Page rewriting pageReceiver method</p>
-<pre class="prettyprint source lang-js"><code>import React from 'react';
-import CtMobile from '@ctmobile/react';
-export default class extends CtMobile.Page.WrappedPage {
-   constructor(props){
-     super(props);
-     this.state = {
-         resultText:'',
-     };
+Page rewriting pageReceiver method<pre class="prettyprint source lang-js"><code>&lt;template>
+   &lt;div>{{resultText}}&lt;/div>
+&lt;/template>
+&lt;script>
+   export default {
+      data:() => {
+         return {
+             resultText: ''
+         };
+      },
+      methods:{
+         /**
+         * @override
+         */
+         pageReceiver(intent) {
+             this.resultText = JSON.stringify(intent);
+         }
+      }
    }
-
-   /**
-    * @override
-    */
-   pageReceiver(intent) {
-     this.setState({
-         resultText:JSON.stringify(intent),
-     });
-   }
-
-   render(){
-     return(
-         &lt;React.Fragment>
-           {this.state.resultText}
-         &lt;/React.Fragment>
-     );
-   }
-}</code></pre></li>
+&lt;/script></code></pre></li>
 <li><p>Register via api</p>
-<pre class="prettyprint source lang-js"><code>import React from 'react';
-import CtMobile from '@ctmobile/react';
-export default class extends CtMobile.Page.WrappedPage {
-  constructor(props){
-    super(props);
-    this.state = {
-       resultText: '',
-    };
-  }
+<pre class="prettyprint source lang-js"><code>&lt;template>
+     &lt;div>{{resultText}}&lt;/div>
+&lt;/template>
+&lt;script>
+     export default {
+         data(){
+             return {
+                 resultText: ''
+             }
+         },
+         methods:{
+             /**
+              * @override
+              */
+              pageCreate() {
+                this.onRegisterReceiver = this.onRegisterReceiver.bind(this);
 
-  /**
-    * @override
-    */
-  pageCreate() {
-    this.onRegisterReceiver = this.onRegisterReceiver.bind(this);
-
-     // register borasdcast
-     this.props.ctmobile.registerReceiver({
-       el: this.props.parent.getPageDOM(),
-       action: 'borasdcast_normal_api',
-       priority: 1,
-       categorys: []
-     }, this.onRegisterReceiver);
-  }
-
-  onRegisterReceiver(intent) {
-     this.setState({
-         resultText:JSON.stringify(intent),
-     });
-  }
-
-  render() {
-     return (
-         &lt;React.Fragment>
-             {this.state.resultText}
-         &lt;/React.Fragment>
-     );
-  }
-
-}</code></pre></li>
+                 // 注册borasdcast
+                 this.$parent.ctmobile.registerReceiver({
+                   el: this.$parent.getPageDOM(),
+                   action: 'borasdcast_normal_api',
+                   priority: 1,
+                   categorys: []
+                 }, this.onRegisterReceiver);
+              },
+              onRegisterReceiver(intent) {
+                 this.resultText = JSON.stringify(intent);
+              }
+         }
+     }
+&lt;/script></code></pre></li>
 <li>Sending an unordered broadcast
-Call CtMobile's sendBroadcast method in the Page class<pre class="prettyprint source lang-js"><code>this.props.ctmobile.sendBroadcast({
+Call CtMobile's sendBroadcast method in the Page class<pre class="prettyprint source lang-js"><code>this.$parent.ctmobile.sendBroadcast({
  action: 'actionCode',
  categorys: ['c1','c2'],
  bundle: {
@@ -339,7 +424,7 @@ Call CtMobile's sendBroadcast method in the Page class<pre class="prettyprint so
  }
 });</code></pre></li>
 <li>Send an orderly broadcast
-Call CtMobile's sendOrderedBroadcast method in the Page class<pre class="prettyprint source lang-js"><code>this.props.ctmobile.sendOrderedBroadcast({
+Call CtMobile's sendOrderedBroadcast method in the Page class<pre class="prettyprint source lang-js"><code>this.$parent.ctmobile.sendOrderedBroadcast({
  action: 'actionCode',
  categorys: ['c1','c2'],
  bundle: {
@@ -352,13 +437,13 @@ Call CtMobile's sendOrderedBroadcast method in the Page class<pre class="prettyp
 Ordered broadcast notifications are ordered. This order is determined by the priority attribute. The larger the priority, the sooner it is notified. The smaller the later, the more notified.
 Use configuration settings priority<pre class="prettyprint source lang-js"><code>const Router = {
 index:{
-component: import(/* webpackChunkName: &quot;index&quot; */ &quot;../pages/index&quot;),
+component: import(/* webpackChunkName: &quot;index&quot; */ &quot;../pages/index/index.vue&quot;),
 config:{
    intentfilterPriority:0
 }
 }
 }</code></pre>Use api registration to set priority<pre class="prettyprint source lang-js"><code>// register borasdcast
-this.props.ctmobile.registerReceiver({
+this.$parent.ctmobile.registerReceiver({
 action: 'actionCode',
 priority: 0,
 categorys: ['c1','c2']
@@ -375,24 +460,15 @@ categorys: ['c1','c2']
 <h2><strong>12. Other functions</strong></h2><ul>
 <li><p>Whether to increase history
 If you don't want to add a new page to the history stack, you can set the reload property to true to prevent the browser from adding history.</p>
-<pre class="prettyprint source lang-js"><code>&lt;Link pageId=&quot;a&quot; reload=&quot;true&quot;>info A&lt;/Link></code></pre><pre class="prettyprint source lang-js"><code>this.props.ctmobile.startPage('#a?pageId=a',{
+<pre class="prettyprint source lang-js"><code>&lt;ctmobile-link pageId=&quot;a&quot; reload=&quot;true&quot;>info A&lt;/ctmobile-link></code></pre><pre class="prettyprint source lang-js"><code>this.$parent.ctmobile.startPage('#a?pageId=a',{
  reload:true
-});</code></pre><p>For example, index.jsx -&gt; a.jsx, then only a.jsx in the history stack</p>
+});</code></pre><p>For example, index.vue -&gt; a.vue, then only a.vue in the history stack</p>
 </li>
-<li><p>Use Back to return the page</p>
-<pre class="prettyprint source lang-js"><code>import React from 'react';
-import CtMobile from '@ctmobile/react';
-const {Back} = CtMobile;
-
-export default class extends CtMobile.Page.WrappedPage {
- render(){
-     return(
-         &lt;React.Fragment>
-             &lt;Back/>
-         &lt;/React.Fragment>
-     );
- }
-}</code></pre></li>
+<li><p>Use ctmobile-back to return the page</p>
+<pre class="prettyprint source lang-html"><code>&lt;template>
+ &lt;ctmobile-back/>
+&lt;/template>
+&lt;script>export default {}&lt;/script></code></pre></li>
 </ul>
 </article>
 
@@ -401,13 +477,13 @@ export default class extends CtMobile.Page.WrappedPage {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Back.html">Back</a></li><li><a href="BorasdCast.html">BorasdCast</a></li><li><a href="CtMobile.html">CtMobile</a></li><li><a href="CtMobileFactory.html">CtMobileFactory</a></li><li><a href="Link.html">Link</a></li><li><a href="global.html#Page">Page</a></li><li><a href="PageComponent.html">PageComponent</a></li><li><a href="Router.html">Router</a></li><li><a href="WrappedPage.html">WrappedPage</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-config.html">配置</a></li><li><a href="tutorial-introduction.html">自述</a></li><li><a href="tutorial-tutorial.html">指南</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Context">Context</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Back.html">Back</a></li><li><a href="BorasdCast.html">BorasdCast</a></li><li><a href="CtMobile.html">CtMobile</a></li><li><a href="CtMobileFactory.html">CtMobileFactory</a></li><li><a href="CtMobileVuePlugin.html">CtMobileVuePlugin</a></li><li><a href="Link.html">Link</a></li><li><a href="module.exports_module.exports.html">exports</a></li><li><a href="Page.html">Page</a></li><li><a href="Router.html">Router</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-config.html">配置</a></li><li><a href="tutorial-introduction.html">自述</a></li><li><a href="tutorial-tutorial.html">指南</a></li></ul><h3>Global</h3><ul><li><a href="global.html#methods">methods</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Nov 23 2018 16:13:15 GMT+0800 (中国标准时间)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Nov 29 2018 15:29:46 GMT+0800 (中国标准时间)
 </footer>
 
 <script> prettyPrint(); </script>

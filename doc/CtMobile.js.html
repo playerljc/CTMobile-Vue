@@ -27,16 +27,15 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/***
- * Created by playerljc on 2018/11/13.
+ * Created by playerljc on 2018/11/26.
  * CtMobile.js
- * CtMobie-React移动端开发框架，基于React
+ * CtMobie-Vue移动端开发框架，基于Vue
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
+import Vue from 'vue';
 import $ from "jquery";
 import Page from "./Page";
-import Router from "./Router";
+import Router, {Link, Back} from "./Router";
 import BorasdCast from "./BorasdCast";
 
 /**
@@ -111,36 +110,46 @@ function createPage(id, callback) {
       }
       resolve();
     } else {
-      let ReactComponent;
+      let VueComponent;
       const pageRouterConfig = this.config.router[pageId];
       if (pageRouterConfig) {
         // 路由中配置的ReactComponent
         const component = pageRouterConfig.component;
         if (component &amp;&amp; component.then) {
-          component.then((ReactComponentWrap) => {
-            if (ReactComponentWrap) {
+          component.then((VueComponentDefault) => {
+            if (VueComponentDefault) {
               // 每个页的逻辑组件
-              ReactComponent = ReactComponentWrap.default;
+              VueComponent = VueComponentDefault.default;
               // 顶层容器
               const el = $(`&lt;div data-ct-data-role="page">&lt;/div>`)[0];
+              const innerEl = $('&lt;div>&lt;/div>')[0];
+              el.appendChild(innerEl);
               document.body.appendChild(el);
-              // 包装逻辑组件
-              const WrappedComponent = Page.create(el)(ReactComponent);
-              // 包装逻辑组件放入顶层容器
-              ReactDOM.render(
-                &lt;WrappedComponent
-                  ctmobile={this}
-                  id={id}
-                  // ct-data的一系列配置
-                  config={pageRouterConfig.config || {}}
-                  // componentDidMount后的操作
-                  callback={callback}
-                />
-                ,
-                el,
-                () => {
-                  resolve();
-                }
+
+              // 组件的名称
+              // ctmobile + Router的config中的键
+              const componentTabName = `ctmobile-${pageId.toLowerCase()}`;
+              const $vueIns = new Vue(
+                Object.assign(
+                  new Page({
+                    ctmobile: this,
+                    id,
+                    el,
+                    // ct-data的一系列配置
+                    config: pageRouterConfig.config || {},
+                    // mount后的操作
+                    callback
+                  }),
+                  {
+                    el: innerEl,
+                    data: {
+                      _pDom: el,
+                      pageId: pageId,
+                    },
+                    template: `&lt;${componentTabName} :_pDom="_pDom" :pageId="pageId" />`,
+                    components: {[componentTabName]: VueComponent}
+                  }
+                )
               );
             } else {
               reject();
@@ -155,7 +164,6 @@ function createPage(id, callback) {
         reject();
       }
     }
-
   });
 }
 
@@ -633,6 +641,37 @@ class CtMobile {
 
 }
 
+/**
+ * CtMobileVuePlugin
+ * @param ctmobile
+ * @return {{install: (function(*, *))}}
+ * @constructor
+ */
+function CtMobileVuePlugin(ctmobile) {
+  return {
+    install(Vue) {
+      const mixin = {
+        beforeCreate() {
+          Object.assign(this, {
+            $ctmobile: ctmobile,
+          })
+        }
+      };
+
+      // Mixin
+      Vue.mixin({
+        components: {
+          'ctmobile-link': Object.assign(Object.create(Link), {
+            mixins: [mixin]
+          }),
+          'ctmobile-back': Object.assign(Object.create(Back), {
+            mixins: [mixin]
+          })
+        }
+      });
+    }
+  }
+}
 
 /**
  * CtMobileFactory
@@ -664,7 +703,9 @@ const CtMobileFactory = {
    * @return {CtMobile}
    */
   create(config) {
-    return new CtMobile(config);
+    const ctMobile = new CtMobile(config);
+    Vue.use(CtMobileVuePlugin(ctMobile));
+    return ctMobile;
   }
 };
 
@@ -678,13 +719,13 @@ export default CtMobileFactory;</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Back.html">Back</a></li><li><a href="BorasdCast.html">BorasdCast</a></li><li><a href="CtMobile.html">CtMobile</a></li><li><a href="CtMobileFactory.html">CtMobileFactory</a></li><li><a href="Link.html">Link</a></li><li><a href="global.html#Page">Page</a></li><li><a href="PageComponent.html">PageComponent</a></li><li><a href="Router.html">Router</a></li><li><a href="WrappedPage.html">WrappedPage</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-config.html">配置</a></li><li><a href="tutorial-introduction.html">自述</a></li><li><a href="tutorial-tutorial.html">指南</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Context">Context</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Back.html">Back</a></li><li><a href="BorasdCast.html">BorasdCast</a></li><li><a href="CtMobile.html">CtMobile</a></li><li><a href="CtMobileFactory.html">CtMobileFactory</a></li><li><a href="CtMobileVuePlugin.html">CtMobileVuePlugin</a></li><li><a href="Link.html">Link</a></li><li><a href="module.exports_module.exports.html">exports</a></li><li><a href="Page.html">Page</a></li><li><a href="Router.html">Router</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-config.html">配置</a></li><li><a href="tutorial-introduction.html">自述</a></li><li><a href="tutorial-tutorial.html">指南</a></li></ul><h3>Global</h3><ul><li><a href="global.html#methods">methods</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Nov 23 2018 16:13:15 GMT+0800 (中国标准时间)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Nov 29 2018 15:29:45 GMT+0800 (中国标准时间)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -1,5 +1,5 @@
-## CtMobile-React
-&ensp;&ensp;A mobile framework that supports multiple forms of page switching, page transitions, page values, notifications, etc., for developing single page applications (SPA), hybrid development (Hybrid), Cordova development, CtMobile-React is in [" CtMobile"](https://github.com/playerljc/CTMobile "click to understand CtMobile"), plus support for [React](https://reactjs.org/ "click to learn React") .
+## CtMobile-Vue
+&ensp;&ensp;A mobile framework that supports multiple forms of page switching, page transitions, page values, notifications, etc., for developing single page applications (SPA), hybrid development (Hybrid), Cordova development, CtMobile-Vue is in [" CtMobile"](https://github.com/playerljc/CTMobile "click to understand CtMobile"), plus support for [Vue](https://cn.vuejs.org/ "click to learn Vue") .
 ## Development inspiration
 &ensp;&ensp; When I first came into contact with Hybrid development, the company chose jQueryMobile+Cordova to develop hybrid applications. When using jQueryMobile, I encountered many problems. For example, management class and Dom are not well integrated. Together, the original idea was that if each partial page on the browser side and its management class can be just like the Activity in Android, so the inspiration comes, and the implementation of CtMobile is completely realized by the Activity in Android.
 ## Three concepts
