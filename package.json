@@ -1,13 +1,7 @@
 {
-<<<<<<< HEAD
-  "name": "@ctmobile/react",
-  "version": "1.0.1",
-  "description": "CTMobile的React实现",
-=======
   "name": "@ctmobile/vue",
   "version": "1.0.0",
   "description": "CTMobile的Vue实现",
->>>>>>> develop
   "main": "lib/index.js",
   "scripts": {
     "debug": "rimraf demo/src/ctmobile-vue && rimraf note/src/ctmobile-vue && node bin/debug.js",
@@ -46,18 +40,11 @@
     "@babel/plugin-proposal-function-bind": "^7.0.0",
     "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/preset-env": "^7.1.6",
-<<<<<<< HEAD
-    "@babel/preset-react": "^7.0.0",
-    "@babel/runtime": "^7.1.5",
-    "autoprefixer": "^8.5.0",
-    "babel-loader": "^7.1.4",
-=======
     "@babel/runtime": "^7.1.5",
     "autoprefixer": "^8.5.0",
     "babel-helper-vue-jsx-merge-props": "^2.0.3",
     "babel-loader": "^7.1.4",
     "babel-plugin-transform-vue-jsx": "^3.7.0",
->>>>>>> develop
     "eslint": "^5.8.0",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.4.0",

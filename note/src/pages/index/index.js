@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-import CtMobile from "@ctmobile/react";
-import AppBar from '../../components/appbar';
-import SearchBar from '../../components/searchbar';
-import FloatingButton from '../../components/flbtn';
-import {ListView, WaterfallView} from '../../components/view';
-=======
->>>>>>> develop
 import DAO from '../../util/DAO';
 
 export default {

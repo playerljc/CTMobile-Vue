@@ -1,82 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-
-import CtMobile from "@ctmobile/react";
-
-const {Link, Back} = CtMobile;
-
-export default class extends CtMobile.Page.WrappedPage {
-  constructor(props) {
-    super(props);
-  }
-
-  /**
-   * 页面创建调用
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageCreate(e) {
-    this.onRegisterReceiver = this.onRegisterReceiver.bind(this);
-
-    // 注册borasdcast
-    this.props.ctmobile.registerReceiver({
-      el: this.props.parent.getPageDOM(),
-      action: 'borasdcast_normal_api',
-      priority: 1,
-      categorys: []
-    }, this.onRegisterReceiver);
-  }
-
-  /***
-   * 页面显示之前
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageBeforeShow(e) {
-    console.log(this.props.id, 'pageBeforeShow');
-  }
-
-  /***
-   * 页面显示
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageShow(e) {
-    console.log(this.props.id, 'pageShow');
-  }
-
-  /***
-   *  页面显示之后
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageAfterShow(e) {
-    console.log(this.props.id, 'pageAfterShow');
-  }
-
-  /***
-   * 页面暂停之前
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageBeforePause(e) {
-    console.log(this.props.id, 'pageBeforePause');
-  }
-
-  /***
-   * 页面暂停之后
-   * @callback
-   * @override
-   * @param {Object} e
-   */
-  pageAfterPause(e) {
-    console.log(this.props.id, 'pageAfterPause');
-=======
 export default {
   props: {
     _pDom: {
@@ -229,7 +150,6 @@ export default {
     pageReceiver(bundle, functions) {
       console.log(`${this.$parent.getId()}:pageReceiver`);
     }
->>>>>>> develop
   }
 };
 

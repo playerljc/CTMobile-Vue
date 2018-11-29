@@ -42,13 +42,7 @@ Page is used to manage the entire life cycle of page creation, initialization, a
 ## Installation
 &ensp;&ensp;need to rely on vue, if you want to use the .vue single file component, you need to install [vue-loader](https://github.com/vuejs/vue-loader), [vue-template-compiler](https://www.npmjs.com/package/babel-plugin-transform-vue-jsx), if you want to support jsx, you need to install [babel-plugin-transform-vue-jsx](https://github.com/vuejs/babel-plugin-transform-vue-jsx), please refer to [vue-cli](https://github.com/vuejs/vue-cli "vue-cli") for specific configuration.
 ```bash
-<<<<<<< HEAD
-$ npm install react --save
-$ npm install react-dom --save
-$ npm install @ctmobile/react --save
-=======
 $ npm install @ctmobile/vue --save-dev
->>>>>>> develop
 ```
 ##  API documentation
 [docs](https://playerljc.github.io/ctmobile-vue/index.html)
@@ -59,10 +53,6 @@ $ npm install @ctmobile/vue --save-dev
 --------
 
 ```js
-<<<<<<< HEAD
-import CtMobile from '@ctmobile/react';
-=======
->>>>>>> develop
 const Router = {
     index: {
       component: import(/* webpackChunkName: "index" */ "../pages/index/index.vue"),
@@ -119,14 +109,6 @@ const App = CtMobile.CtMobileFactory.create({
 ```
 &ensp;&ensp;index.js
 ```js
-<<<<<<< HEAD
-import React from 'react';
-import CtMobile from '@ctmobile/react';
-
-export default class extends CtMobile.Page.WrappedPage {
-    constructor(props) {
-      super(props);
-=======
 export default {
   props: {
     _pDom: {
@@ -137,7 +119,6 @@ export default {
       type: String,
       require: true,
       value: ''
->>>>>>> develop
     }
   },
   data: () => {
@@ -280,17 +261,8 @@ The top container.
 -----------
 &ensp;There are two ways to jump to a new page.
 * Label method
-<<<<<<< HEAD
-```js
-import React from 'react';
-import CtMobile from '@ctmobile/react';
-const {Link, Back} = CtMobile;
-
-<Link pageId="info">Jump to the info page</Link>
-=======
 ```html
 <ctmobile-link pageId="info">Jump to the info page</ctmobile-link>
->>>>>>> develop
 ```
 &ensp;&ensp;Using the pageId attribute in the Link tag, you can jump to a new page where the value of pageId is the key in Router，ctmobile-link can be used globally.
 
@@ -348,16 +320,7 @@ const Router = {
 };
 ```
 
-<<<<<<< HEAD
-&ensp;&ensp;For example, there are currently two pages index.jsx, PopUpDialog.jsx two pages. There is an eject button in index.jsx, click the button to pop up the PopUpDialog page.
-
-&ensp;&ensp;Index.js definition
-```js
-import React from 'react';
-import CtMobile from '@ctmobile/react';
-=======
 &ensp;&ensp;For example, there are currently two pages index.vue, PopUpDialog.vue two pages. There is an eject button in index.vue, click the button to pop up the PopUpDialog page.
->>>>>>> develop
 
 &ensp;&ensp;index.vue definition
 ```html
@@ -401,29 +364,6 @@ import CtMobile from '@ctmobile/react';
 </script>
 ```
 
-<<<<<<< HEAD
-&ensp;&ensp;Definition of PopUpDialog.js
-```js
-import React from 'react';
-import CtMobile from '@ctmobile/react';
-
-export default class extends CtMobile.Page.WrappedPage {
-  constructor(props){
-    super(props);
-  }
-
-  render() {
-    return (
-        <React.Fragment>
-          <button onClick={() => {
-            this.props.parent.setResult('PopUpDialog', {a: 1, b: 2});
-            this.props.parent.over();
-          }}>return</button>
-        </React.Fragment>
-    );
-  }
-}
-=======
 &ensp;&ensp;Definition of PopUpDialog.vue
 ```html
 <template>
@@ -435,7 +375,6 @@ export default class extends CtMobile.Page.WrappedPage {
 <script>
     export default {}
 </script>
->>>>>>> develop
 ```
 &ensp;&ensp;index.vue rewrites the pageResult method. This method is triggered after PopUpDialog returns or manually calls the finish method. The pageResult has three parameters e, resultCode, bundle, where resultCode is used to distinguish different sources, bundle is Bring back the value.
 &ensp;&ensp;PopUpDialog.vue calls the this.$parent.setResult(resultCode,bundle); method to set the returned value, and the page closes after calling the this.$parent.over(); method.
@@ -514,33 +453,6 @@ Set the transition attribute value in the config of the Router. The framework su
    Add the intentfilterAction to the Router, register the intentfilterCategorys property.
    Page rewriting pageReceiver method
    ```js
-<<<<<<< HEAD
-   import React from 'react';
-   import CtMobile from '@ctmobile/react';
-   export default class extends CtMobile.Page.WrappedPage {
-      constructor(props){
-        super(props);
-        this.state = {
-            resultText:'',
-        };
-      }
-
-      /**
-       * @override
-       */
-      pageReceiver(intent) {
-        this.setState({
-            resultText:JSON.stringify(intent),
-        });
-      }
-
-      render(){
-        return(
-            <React.Fragment>
-              {this.state.resultText}
-            </React.Fragment>
-        );
-=======
    <template>
       <div>{{resultText}}</div>
    </template>
@@ -559,54 +471,11 @@ Set the transition attribute value in the config of the Router. The framework su
                 this.resultText = JSON.stringify(intent);
             }
          }
->>>>>>> develop
       }
    </script>
    ```
  * Register via api
    ```js
-<<<<<<< HEAD
-   import React from 'react';
-   import CtMobile from '@ctmobile/react';
-   export default class extends CtMobile.Page.WrappedPage {
-     constructor(props){
-       super(props);
-       this.state = {
-          resultText: '',
-       };
-     }
-
-     /**
-       * @override
-       */
-     pageCreate() {
-       this.onRegisterReceiver = this.onRegisterReceiver.bind(this);
-
-        // register borasdcast
-        this.props.ctmobile.registerReceiver({
-          el: this.props.parent.getPageDOM(),
-          action: 'borasdcast_normal_api',
-          priority: 1,
-          categorys: []
-        }, this.onRegisterReceiver);
-     }
-
-     onRegisterReceiver(intent) {
-        this.setState({
-            resultText:JSON.stringify(intent),
-        });
-     }
-
-     render() {
-        return (
-            <React.Fragment>
-                {this.state.resultText}
-            </React.Fragment>
-        );
-     }
-
-   }
-=======
    <template>
         <div>{{resultText}}</div>
    </template>
@@ -638,7 +507,6 @@ Set the transition attribute value in the config of the Router. The framework su
             }
         }
    </script>
->>>>>>> develop
    ```
  * Sending an unordered broadcast
  Call CtMobile's sendBroadcast method in the Page class
@@ -707,25 +575,6 @@ const Router = {
     reload:true
  });
  ```
-<<<<<<< HEAD
- For example, index.jsx -> a.jsx, then only a.jsx in the history stack
-
- * Use Back to return the page
- ```js
- import React from 'react';
- import CtMobile from '@ctmobile/react';
- const {Back} = CtMobile;
-
- export default class extends CtMobile.Page.WrappedPage {
-    render(){
-        return(
-            <React.Fragment>
-                <Back/>
-            </React.Fragment>
-        );
-    }
- }
-=======
  For example, index.vue -> a.vue, then only a.vue in the history stack
 
  * Use ctmobile-back to return the page
@@ -734,7 +583,6 @@ const Router = {
     <ctmobile-back/>
  </template>
  <script>export default {}</script>
->>>>>>> develop
  ```
 
 ## Attribute configuration
@@ -784,11 +632,7 @@ $ npm start
 ```
 Enter localhost:8001 on your browser to access the main page of the demo.
 
-<<<<<<< HEAD
-![](https://github.com/playerljc/CTMobile-React/blob/master/outimages/note/note-index.png "note")
-=======
 ![](https://github.com/playerljc/CTMobile-Vue/blob/master/outimages/note/note-index.png "note")
->>>>>>> develop
 
 ## Discussion group
 ![](https://github.com/playerljc/CTMobile/raw/master/outimages/qq.png "Discussion group")

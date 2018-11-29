@@ -1,10 +1,5 @@
 import moment from 'moment';
 import uuidv1 from 'uuid/v1';
-<<<<<<< HEAD
-import CtMobile from "@ctmobile/react";
-import {AppLayout, AppHeader, AppContent, AppFooter, AppBack} from '../../components/layout';
-=======
->>>>>>> develop
 import DAO from '../../util/DAO';
 
 // export default class extends CtMobile.Page.WrappedPage {

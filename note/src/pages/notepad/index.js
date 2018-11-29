@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import React from 'react';
-import CtMobile from "@ctmobile/react";
-import {AppLayout, AppHeader, AppContent, AppBack} from '../../components/layout';
-=======
->>>>>>> develop
 import DAO from '../../util/DAO';
 
 export default {

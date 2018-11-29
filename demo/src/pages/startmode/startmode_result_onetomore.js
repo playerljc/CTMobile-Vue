@@ -15,12 +15,8 @@ export default {
   },
   created() {
 
-<<<<<<< HEAD
-import CtMobile from "@ctmobile/react";
-=======
   },
   mounted() {
->>>>>>> develop
 
   },
   methods: {

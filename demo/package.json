@@ -29,11 +29,7 @@
     "WebFramework"
   ],
   "devDependencies": {
-<<<<<<< HEAD
-    "@ctmobile/react": "^1.0.1",
-=======
     "@ctmobile/vue": "^1.0.0",
->>>>>>> develop
     "@babel/core": "^7.1.2",
     "@babel/plugin-syntax-dynamic-import": "^7.0.0",
     "@babel/plugin-transform-runtime": "^7.1.0",
@@ -42,10 +38,7 @@
     "babel-eslint": "^10.0.1",
     "babel-helper-vue-jsx-merge-props": "^2.0.3",
     "babel-loader": "^8.0.4",
-<<<<<<< HEAD
-=======
     "babel-plugin-transform-vue-jsx": "^3.7.0",
->>>>>>> develop
     "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "^4.5.3",
     "cross-env": "^5.2.0",

@@ -42,13 +42,7 @@
 ##  安装
 需要依赖vue，如果要是用.vue单文件组件，需要安装[vue-loader](https://github.com/vuejs/vue-loader)，[vue-template-compiler](https://www.npmjs.com/package/babel-plugin-transform-vue-jsx)，如果要支持jsx，需要安装[babel-plugin-transform-vue-jsx](https://github.com/vuejs/babel-plugin-transform-vue-jsx)，具体配置请参考[vue-cli](https://github.com/vuejs/vue-cli "vue-cli")。
 ```bash
-<<<<<<< HEAD
-$ npm install react --save
-$ npm install react-dom --save
-$ npm install @ctmobile/react --save
-=======
 $ npm install @ctmobile/vue --save-dev
->>>>>>> develop
 ```
 
 ##  API文档
@@ -60,10 +54,6 @@ $ npm install @ctmobile/vue --save-dev
 --------
 
 ```js
-<<<<<<< HEAD
-import CtMobile from '@ctmobile/react';
-=======
->>>>>>> develop
 const Router = {
     index: {
       component: import(/* webpackChunkName: "index" */ "../pages/index/index.vue"),
@@ -120,14 +110,6 @@ const App = CtMobile.CtMobileFactory.create({
 ```
 &ensp;&ensp;index.js
 ```js
-<<<<<<< HEAD
-import React from 'react';
-import CtMobile from '@ctmobile/react';
-
-export default class extends CtMobile.Page.WrappedPage {
-    constructor(props) {
-      super(props);
-=======
 export default {
   props: {
     _pDom: {
@@ -138,7 +120,6 @@ export default {
       type: String,
       require: true,
       value: ''
->>>>>>> develop
     }
   },
   data: () => {
@@ -282,15 +263,7 @@ export default {
 &ensp;跳转到一个新页面可以有两种方式
 * 标签方式
 ```js
-<<<<<<< HEAD
-import React from 'react';
-import CtMobile from '@ctmobile/react';
-const {Link, Back} = CtMobile;
-
-<Link pageId="info">跳转到info页面</Link>
-=======
 <ctmobile-link pageId="info">跳转到info页面</ctmobile-link>
->>>>>>> develop
 ```
 &ensp;&ensp;在ctmobile-link标签中使用pageId属性就可以跳转到一个新的页面，其中pageId的值为Router中的键，ctmobile-link在全局都可以使用。
 
@@ -350,20 +323,6 @@ const Router = {
 
 &ensp;&ensp;举个例子，当前有两个页面index.vue，PopUpDialog.vue两个页面。index.vue中有个弹出按钮，点击按钮弹出PopUpDialog页面
 
-<<<<<<< HEAD
-&ensp;&ensp;index.js定义
-```js
-import React from 'react';
-import CtMobile from '@ctmobile/react';
-
-const {Link} = CtMobile;
-
-export default class extends CtMobile.Page.WrappedPage {
-  constructor(props){
-    super(props);
-    this.state = {
-        resultText:'',
-=======
 &ensp;&ensp;index.vue定义
 ```html
 <template>
@@ -402,34 +361,10 @@ export default class extends CtMobile.Page.WrappedPage {
              });
           }
       }
->>>>>>> develop
     }
 </script>
 ```
 
-<<<<<<< HEAD
-&ensp;&ensp;PopUpDialog.js的定义
-```js
-import React from 'react';
-import CtMobile from '@ctmobile/react';
-
-export default class extends CtMobile.Page.WrappedPage {
-  constructor(props){
-    super(props);
-  }
-
-  render() {
-    return (
-        <React.Fragment>
-          <button onClick={() => {
-            this.props.parent.setResult('PopUpDialog', {a: 1, b: 2});
-            this.props.parent.over();
-          }}>返回</button>
-        </React.Fragment>
-    );
-  }
-}
-=======
 &ensp;&ensp;PopUpDialog.vue的定义
 ```html
 <template>
@@ -441,7 +376,6 @@ export default class extends CtMobile.Page.WrappedPage {
 <script>
     export default {}
 </script>
->>>>>>> develop
 ```
 &ensp;&ensp;index.vue中重写pageResult方法，此方法在PopUpDialog返回或手动调用finish方法后被触发，pageResult的有三个参数e，resultCode，bundle，其中resultCode用来区分不同的来源，bundle是被带回来的值。
 &ensp;&ensp;PopUpDialog.vue中调用this.$parent.setResult(resultCode,bundle);方法来设置返回的值，在调用this.$parent.over();方法后页面关闭。
@@ -519,34 +453,6 @@ Page一共有10个生命周期函数
  * 通过配置注册
    在Router的中加入intentfilterAction，intentfilterCategorys属性进行注册
    Page中重写pageReceiver方法
-<<<<<<< HEAD
-   ```js
-   import React from 'react';
-   import CtMobile from '@ctmobile/react';
-   export default class extends CtMobile.Page.WrappedPage {
-      constructor(props){
-        super(props);
-        this.state = {
-            resultText:'',
-        };
-      }
-
-      /**
-       * @override
-       */
-      pageReceiver(intent) {
-        this.setState({
-            resultText:JSON.stringify(intent),
-        });
-      }
-
-      render(){
-        return(
-            <React.Fragment>
-              {this.state.resultText}
-            </React.Fragment>
-        );
-=======
    ```html
    <template>
       <div>{{resultText}}</div>
@@ -566,54 +472,10 @@ Page一共有10个生命周期函数
                 this.resultText = JSON.stringify(intent);
             }
          }
->>>>>>> develop
       }
    </script>
    ```
  * 通过api注册
-<<<<<<< HEAD
-   ```js
-   import React from 'react';
-   import CtMobile from '@ctmobile/react';
-   export default class extends CtMobile.Page.WrappedPage {
-     constructor(props){
-       super(props);
-       this.state = {
-          resultText: '',
-       };
-     }
-
-     /**
-       * @override
-       */
-     pageCreate() {
-       this.onRegisterReceiver = this.onRegisterReceiver.bind(this);
-
-        // 注册borasdcast
-        this.props.ctmobile.registerReceiver({
-          el: this.props.parent.getPageDOM(),
-          action: 'borasdcast_normal_api',
-          priority: 1,
-          categorys: []
-        }, this.onRegisterReceiver);
-     }
-
-     onRegisterReceiver(intent) {
-        this.setState({
-            resultText:JSON.stringify(intent),
-        });
-     }
-
-     render() {
-        return (
-            <React.Fragment>
-                {this.state.resultText}
-            </React.Fragment>
-        );
-     }
-
-   }
-=======
    ```html
    <template>
         <div>{{resultText}}</div>
@@ -646,7 +508,6 @@ Page一共有10个生命周期函数
             }
         }
    </script>
->>>>>>> develop
    ```
  * 发送无序广播
  在Page类中调用CtMobile的sendBroadcast方法
@@ -715,25 +576,6 @@ const Router = {
     reload:true
  });
  ```
-<<<<<<< HEAD
- 比如index.jsx -> a.jsx，那么历史栈中只有a.jsx
-
- * 使用Back进行页面的返回
- ```js
- import React from 'react';
- import CtMobile from '@ctmobile/react';
- const {Back} = CtMobile;
-
- export default class extends CtMobile.Page.WrappedPage {
-    render(){
-        return(
-            <React.Fragment>
-                <Back/>
-            </React.Fragment>
-        );
-    }
- }
-=======
  比如index.vue -> a.vue，那么历史栈中只有a.vue
 
  * 使用ctmobile-back进行页面的返回
@@ -743,7 +585,6 @@ const Router = {
     <ctmobile-back/>
  </template>
  <script>export default {}</script>
->>>>>>> develop
  ```
 
 ## 属性配置
@@ -793,11 +634,7 @@ $ npm start
 ```
 在浏览器上输入localhost:8001即可访问到demo的主页面。
 
-<<<<<<< HEAD
-![](https://github.com/playerljc/CTMobile-React/blob/master/outimages/note/note-index.png "note")
-=======
 ![](https://github.com/playerljc/CTMobile-Vue/blob/master/outimages/note/note-index.png "note")
->>>>>>> develop
 
 ## 讨论群
 ![](https://github.com/playerljc/CTMobile/raw/master/outimages/qq.png "讨论群")

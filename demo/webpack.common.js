@@ -87,16 +87,11 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-<<<<<<< HEAD
-            presets: ['@babel/preset-env','@babel/preset-react'],
-            plugins: ['@babel/plugin-transform-runtime', "@babel/plugin-syntax-dynamic-import"]
-=======
             presets: ['@babel/preset-env'],
             plugins: [
               '@babel/plugin-transform-runtime',
               "@babel/plugin-syntax-dynamic-import",
               "transform-vue-jsx"]
->>>>>>> develop
           }
         }
       },
@@ -164,13 +159,6 @@ module.exports = {
       }
     ]
   },
-<<<<<<< HEAD
-  // resolve: {
-  //   alias: {
-  //     '@ctmobile/react': path.resolve(__dirname,'src/ctmobile-react/'),
-  //   }
-  // }
-=======
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: {
@@ -178,5 +166,4 @@ module.exports = {
       'vue$': 'vue/dist/vue.esm.js',
     }
   }
->>>>>>> develop
 };
