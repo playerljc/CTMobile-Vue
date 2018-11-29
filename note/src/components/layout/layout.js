@@ -1,9 +1,11 @@
-import React from 'react';
+import AppHeader from './header.vue';
+import AppContent from './content.vue';
+import AppFooter from './footer.vue';
 
-export default function ({children, className = '', style = {}}) {
-  return (
-    <div className={`AppLayout ${className}`} style={style}>
-      {children}
-    </div>
-  );
+export default {
+  components: {
+    AppHeader,
+    AppContent,
+    AppFooter
+  }
 }

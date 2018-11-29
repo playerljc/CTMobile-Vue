@@ -1,8 +1,12 @@
 import Media from "../util/media";
+<<<<<<< HEAD
 import CtMobile from "@ctmobile/react";
+=======
+import CtMobile from "@ctmobile/vue";
+>>>>>>> develop
 import Router from "../util/Router";
 import DB from '../util/DB';
-
+import Vue from 'vue';
 /**
  * 创建note表
  * @returns {*}
@@ -53,6 +57,13 @@ class App {
   }
 
   initCtMobile() {
+    Vue.component('AppBar',require('../components/appbar/index.vue').default);
+    Vue.component('SearchBar',require('../components/searchbar/index.vue').default);
+    Vue.component('AppView',require('../components/view/index.vue').default);
+    Vue.component('AppLayout',require('../components/layout/layout.vue').default);
+    Vue.component('AppBack',require('../components/layout/back.vue').default);
+    Vue.component('FloatingButton',require('../components/flbtn/index.vue').default);
+
     this.ctmobile = CtMobile.CtMobileFactory.create({
       supportCordova: false,
       linkCaptureReload: false,

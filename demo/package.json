@@ -1,7 +1,7 @@
 {
-  "name": "ctmobile-react-demo",
+  "name": "ctmobile-vue-demo",
   "version": "1.0.0",
-  "description": "CtMobile-react的Demo",
+  "description": "CtMobile-vue的Demo",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -13,9 +13,10 @@
   "author": "playerljc <playerljc@163.com>",
   "license": "MIT",
   "keywords": [
-    "ctmobile-react",
+    "ctmobile-vue",
     "CtMobile",
-    "React",
+    "Vue",
+    "Vuejs",
     "mobile",
     "webapp",
     "SPA",
@@ -28,15 +29,23 @@
     "WebFramework"
   ],
   "devDependencies": {
+<<<<<<< HEAD
     "@ctmobile/react": "^1.0.1",
+=======
+    "@ctmobile/vue": "^1.0.0",
+>>>>>>> develop
     "@babel/core": "^7.1.2",
     "@babel/plugin-syntax-dynamic-import": "^7.0.0",
     "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/preset-env": "^7.1.0",
-    "@babel/preset-react": "^7.0.0",
     "@babel/runtime": "^7.1.2",
     "babel-eslint": "^10.0.1",
+    "babel-helper-vue-jsx-merge-props": "^2.0.3",
     "babel-loader": "^8.0.4",
+<<<<<<< HEAD
+=======
+    "babel-plugin-transform-vue-jsx": "^3.7.0",
+>>>>>>> develop
     "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "^4.5.3",
     "cross-env": "^5.2.0",
@@ -56,10 +65,11 @@
     "less-plugin-clean-css": "^1.5.1",
     "lodash": "^4.17.11",
     "normalize.less": "^1.0.0",
-    "react": "^16.6.3",
-    "react-dom": "^16.6.3",
     "uglifyjs-webpack-plugin": "^2.0.1",
     "uuid": "^3.3.2",
+    "vue": "^2.5.17",
+    "vue-loader": "^15.4.2",
+    "vue-template-compiler": "^2.5.17",
     "webpack": "^4.20.2",
     "webpack-cli": "^3.1.2",
     "webpack-dev-middleware": "^3.4.0",

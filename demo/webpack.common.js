@@ -6,6 +6,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 const LessPluginCleanCSS = require('less-plugin-clean-css');
 const LessPluginAutoPrefix = require('less-plugin-autoprefix');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 const extractLess = new ExtractTextPlugin({
   filename: (getPath) => {
@@ -16,6 +17,7 @@ const extractLess = new ExtractTextPlugin({
 });
 
 const APP_PATH = path.resolve(__dirname, 'src'); // 项目src目录
+console.log(APP_PATH);
 
 module.exports = {
   entry: {
@@ -28,6 +30,8 @@ module.exports = {
     publicPath: '/',
   },
   plugins: [
+    // 请确保引入这个插件！
+    new VueLoaderPlugin(),
     new webpack.DllReferencePlugin({
       context: __dirname,
       manifest: require('./src/assets/dll/commons-manifest.json')
@@ -79,14 +83,28 @@ module.exports = {
       {
         test: /\.m?js$/,
         exclude: /(node_modules|bower_components)/,
-        // include: [APP_PATH],
+        include: [APP_PATH],
         use: {
           loader: 'babel-loader',
           options: {
+<<<<<<< HEAD
             presets: ['@babel/preset-env','@babel/preset-react'],
             plugins: ['@babel/plugin-transform-runtime', "@babel/plugin-syntax-dynamic-import"]
+=======
+            presets: ['@babel/preset-env'],
+            plugins: [
+              '@babel/plugin-transform-runtime',
+              "@babel/plugin-syntax-dynamic-import",
+              "transform-vue-jsx"]
+>>>>>>> develop
           }
         }
+      },
+      {
+        test: /\.vue$/,
+        exclude: /(node_modules|bower_components)/,
+        include: [APP_PATH],
+        loader: 'vue-loader'
       },
       {
         test: /\.css$/,
@@ -146,9 +164,19 @@ module.exports = {
       }
     ]
   },
+<<<<<<< HEAD
   // resolve: {
   //   alias: {
   //     '@ctmobile/react': path.resolve(__dirname,'src/ctmobile-react/'),
   //   }
   // }
+=======
+  resolve: {
+    extensions: ['.js', '.vue', '.json'],
+    alias: {
+      // '@ctmobile/vue': path.resolve(__dirname, 'src/ctmobile-vue/'),
+      'vue$': 'vue/dist/vue.esm.js',
+    }
+  }
+>>>>>>> develop
 };

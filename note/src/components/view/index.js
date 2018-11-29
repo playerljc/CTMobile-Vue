@@ -1,4 +1,19 @@
-import ListView from './list';
-import WaterfallView from './waterfall';
+import ListView from './list.vue';
+import WaterfallView from './waterfall.vue';
 
-export {ListView, WaterfallView};
+export default {
+  props: {
+    type: {
+      type: String,
+      require: true,
+    },
+    data: {
+      type: Array,
+      require: true
+    }
+  },
+  components: {
+    ListView,
+    WaterfallView
+  }
+}

@@ -1,6 +1,11 @@
 @import "../../../node_modules/font-awesome/less/font-awesome.less";
+<<<<<<< HEAD
 @import "../../../node_modules/@ctmobile/react/lib/index.css";
 //@import "../../ctmobile-react/index.less";
+=======
+@import "../../../node_modules/@ctmobile/vue/lib/index.css";
+//@import "../../ctmobile-vue/index.less";
+>>>>>>> develop
 
 header,
 footer {
@@ -173,35 +178,38 @@ footer {
 }
 
 div[data-ct-data-role='page'] {
-  > .ct-content {
-    > ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      > li {
-        padding: 0 10px;
-        > a {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          color: #000;
-          padding: 20px 25px;
-          word-break: break-word;
-        }
+  > div {
+    height: 100%;
+    > .ct-content {
+      > ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        > li {
+          padding: 0 10px;
+          > a {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #000;
+            padding: 20px 25px;
+            word-break: break-word;
+          }
 
-        > a.link {
-          &:after {
-            content: '\f054';
-            font-family: FontAwesome;
-            color: #ccc;
-            font-size: 20px;
+          > a.link {
+            &:after {
+              content: '\f054';
+              font-family: FontAwesome;
+              color: #ccc;
+              font-size: 20px;
+            }
           }
         }
-      }
 
-      > li:not(:last-child) {
-        > a {
-          border-bottom: 1px solid #ccc;
+        > li:not(:last-child) {
+          > a {
+            border-bottom: 1px solid #ccc;
+          }
         }
       }
     }

@@ -1,5 +1,9 @@
 import Media from "../util/media";
+<<<<<<< HEAD
 import CtMobile from "@ctmobile/react";
+=======
+import CtMobile from "@ctmobile/vue";
+>>>>>>> develop
 import Router from "../util/Router";
 
 class App {
