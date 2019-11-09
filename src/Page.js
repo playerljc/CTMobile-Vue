@@ -96,7 +96,7 @@ function layout() {
   /***
    * 复位
    */
-  slideByTransition.call(this, this.transition, "reset", 0);
+  slideByTransition.call(this, this.transition, "resret", 0);
 }
 
 /**
